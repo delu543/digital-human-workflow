@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "format": {"width": 1080, "height": 1920, "fps": 25, "target_seconds": 300},
+  "minimax": {"region": "international", "model": "speech-2.8-hd", "voice_id": null, "speed": 1.0},
+  "heygen": {"transport": null, "avatar_id": null, "engine": "avatar_iv", "resolution": "1080p"},
+  "style": {"preset": "editorial", "accent": "#f7d478", "caption_position": "lower"},
+  "approvals": {"voice": false, "identity": false, "style": false},
+  "rates": {"minimax_usd_per_1000_chars": null, "heygen_usd_per_minute": null, "heygen_credits_per_minute": null, "voice_clone_usd": null, "verified_at": null},
+  "authorization": {"generation": false, "voice_clone": false, "destinations": [], "max_usd_per_job": 0, "max_heygen_credits_per_job": 0, "price_buffer": 1.2}
+}

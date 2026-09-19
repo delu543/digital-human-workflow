@@ -1,0 +1,8 @@
+{
+  "layout": {"title_top": 0.08, "caption_top": 0.79},
+  "keywords": ["具体问题", "小实验", "记录结果"],
+  "scenes": [
+    {"start_caption": 0, "kind": "title", "label": "学习方法", "title": "从一个问题开始", "detail": "先明确这次想学会什么"},
+    {"start_caption": 1, "kind": "steps", "label": "三个动作", "title": "让学习落到行动", "items": ["选一个具体问题", "做一次小实验", "记录真实结果"]}
+  ]
+}

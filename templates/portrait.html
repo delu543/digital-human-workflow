@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=%%WIDTH%%,height=%%HEIGHT%%">
+<title>数字人工作流 · 口播成片</title><script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:Narrator;src:url('assets/NotoSansCJKsc-Regular.otf');font-weight:400}
+*{box-sizing:border-box}body{margin:0;background:#102238;color:#fff;font-family:Narrator,sans-serif}
+#root{position:relative;width:100%;height:100%;overflow:hidden;--s:%%SCALE%%;--accent:%%ACCENT%%}
+.clip{position:absolute}.presenter{inset:0;width:100%;height:100%;object-fit:contain}
+.scene{left:7.5%;right:10%;top:%%TITLE_TOP%%px;z-index:2}
+.scene-inner{padding:calc(18px * var(--s));background:rgba(7,21,35,.86);border-radius:calc(12px * var(--s))}
+.eyebrow{font-size:calc(21px * var(--s));line-height:1.4;color:var(--accent);letter-spacing:1px;margin-bottom:calc(10px * var(--s))}
+h1{font-size:calc(48px * var(--s));line-height:1.3;margin:0;font-weight:700;overflow-wrap:anywhere}
+.accent{height:calc(4px * var(--s));width:calc(68px * var(--s));background:var(--accent);margin-top:calc(14px * var(--s));transform-origin:left}
+p{font-size:calc(23px * var(--s));line-height:1.45;color:#e7edf5;margin:calc(14px * var(--s)) 0 0;overflow-wrap:anywhere}
+.caption{left:5.5%;right:10%;top:%%CAPTION_TOP%%px;z-index:4;display:flex;justify-content:center}
+.caption-inner{font-size:calc(38px * var(--s));line-height:1.4;font-weight:700;text-align:center;max-width:100%;padding:calc(9px * var(--s)) calc(15px * var(--s));background:rgba(5,16,28,.89);border-radius:calc(9px * var(--s));overflow-wrap:anywhere}
+em{font-style:normal;color:var(--accent)}
+.steps{display:grid;gap:calc(12px * var(--s));margin-top:calc(20px * var(--s))}
+.step{display:flex;align-items:center;gap:calc(15px * var(--s));font-size:calc(26px * var(--s));line-height:1.4}.step b{color:var(--accent);font-size:calc(20px * var(--s))}
+.bars{margin-top:calc(20px * var(--s));display:grid;gap:calc(12px * var(--s))}.bar-row{position:relative;padding-bottom:calc(17px * var(--s));font-size:calc(23px * var(--s))}.bar-row b{float:right}.bar{position:absolute;bottom:0;height:calc(7px * var(--s));background:var(--accent);max-width:100%}
+.scene.image{inset:0;background:#102238;padding:8% 8% 25%;display:flex;align-items:center}.image .scene-inner{width:100%;background:transparent;padding:0}.illustration{display:block;width:100%;height:calc(500px * var(--s));object-fit:contain;margin-top:calc(20px * var(--s))}
+#progress{position:absolute;left:0;bottom:0;width:100%;height:calc(5px * var(--s));background:var(--accent);transform-origin:left;z-index:5}
+.minimal .scene-inner{background:rgba(7,21,35,.74);border-radius:0}.minimal .eyebrow,.minimal .accent,.minimal #progress{display:none}.minimal h1{font-size:calc(40px * var(--s))}.minimal .caption-inner{font-weight:400;border-radius:0}
+</style></head><body>
+<div id="root" class="%%PRESET%%" data-composition-id="main" data-start="0" data-width="%%WIDTH%%" data-height="%%HEIGHT%%" data-duration="%%DURATION%%">%%CONTENT%%</div>
+<script>const tl=gsap.timeline({paused:true});%%ANIMATION%%
+window.__timelines=window.__timelines||{};window.__timelines.main=tl;</script>
+</body></html>

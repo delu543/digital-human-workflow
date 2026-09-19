@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "digital-human-workflow"
+version = "0.1.0"
+description = "数字人工作流：由 Codex 编排的个人数字人视频制作工具"
+requires-python = ">=3.11"
+dependencies = ["requests==2.34.2", "imageio-ffmpeg==0.6.0"]
+license = "MIT"
+
+[project.scripts]
+digital-human = "digital_human.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,6 @@
+interface:
+  display_name: "数字人工作流"
+  short_description: "把中文文案制作为本人数字人口播、字幕、配图与动画成片，支持初始化和断点续作"
+  default_prompt: "使用 $digital-human-workflow，按我的文案和视觉要求生成数字人成片与完整素材包；首次使用时先引导必要配置。"
+policy:
+  allow_implicit_invocation: true
