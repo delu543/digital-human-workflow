@@ -129,7 +129,7 @@ class RevisionTests(unittest.TestCase):
         for name in ['templates/assets/NotoSansCJKsc-Regular.otf','templates/assets/OFL.txt','node_modules/gsap/dist/gsap.min.js']:
             p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text('synthetic unit dependency; not executed')
         with patch('digital_human.edit_hyperframes.ROOT',root):editing.compose(child)
-        text=child.artifact('composition').read_text()
+        text=child.artifact('composition').read_text(encoding='utf-8')
         self.assertIn('muted playsinline',text);self.assertIn('data-media-start=',text)
         self.assertIn('第一句。',text);self.assertEqual(child.artifact('avatar').read_bytes(),b'avatar')
 
