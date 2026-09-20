@@ -27,7 +27,7 @@ def scene_times(plan, cues, duration):
 def compose(job, storyboard):
     if job.artifact('composition'): raise WorkflowError('工程版本已存在；请新建任务或手动保留新版本后修改')
     captions=job.artifact('captions');avatar=job.artifact('avatar')
-    if not captions or not avatar: raise WorkflowError('需要真人视频和真实时间轴字幕')
+    if not captions or not avatar: raise WorkflowError('需要数字人视频和真实时间轴字幕')
     timed=read(captions);cues=timed['captions'];duration=timed['duration']
     plan=read(storyboard);scenes=scene_times(plan,cues,duration)
     profile=job.profile()

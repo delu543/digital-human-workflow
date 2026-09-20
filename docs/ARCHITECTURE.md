@@ -10,7 +10,10 @@ flowchart LR
   H --> A[下载本人数字人音视频]
   A --> T[本地声学字幕对齐]
   T --> C[Codex 语义分镜和素材权利记录]
-  C --> F[Hyperframes 本地合成]
+  C --> E[独立剪辑计划和统一时间轴]
+  E --> F[Hyperframes 本地成片]
+  E --> N[可选 Mac 剪映多轨草稿]
+  N --> G[目标剪映 UI 编辑与验收]
   F --> Q[技术检查及视听验收]
   Q --> D[MP4 / SRT / 完整素材包]
 ```
@@ -43,3 +46,11 @@ jobs/<id>/exports/                成片与完整素材包
 quality.py 管理生成前计划、配音哈希验收和私人模板基线；API 与 MCP 在上传/提交之前共享检查，runner 把缺失条件返回给 Codex。供应商适配负责正确参数和传输，不判断美学；avatar_payload 同时生成 API 和 MCP 参数，避免两条路径漂移。已提交请求恢复分支读取原 ID/回执，不经过新的付费创建分支。
 
 新任务标记 quality_version=1，delivery 要求连续片段与音轨依据；旧已交付任务仍可恢复。配置保持 schema_version=1，新增字段为可选、默认省略，不对旧任务做隐式迁移。证据结构检查无法判定检查者是否真的看过/听过，更不等于自动真人感评分。
+
+## v0.3 后期责任
+
+edit_timeline 将源时间 ranges 与成片时间 overlays/audio 编译为整数微秒时间轴。每段数字人和旁白共享同步组与速度；字幕从原声学 cue 映射，不能估算或独立漂移。editing 创建 jobs/<id>/edits/<revision>/ 的完整独立快照，原 job 的云端操作不变。
+
+edit_hyperframes 和 edit_jianying 消费同一时间轴。后者只调用所保留的 MIT 纯 serializer，在任务 exports 内写全新工程，不修改剪映首页、启动程序或调用内部动态库。跨机器用 portable-plan 重建绝对路径；若原生文件已被手改则拒绝从旧计划覆盖。复杂 HTML 的 edit-seal 标记会阻止不一致的原生导出。
+
+旧 composition 和 run --storyboard 仍可用。新 brief 的 postproduction.mode=independent 使 runner 在干净素材与字幕就绪后返回 needs_edit_plan，由 Codex 执行后续命令。工具选择由交付和用户要求决定，不固定剪映依赖。单纯增加后期层不能修复源人物的身份、眼神或口型缺陷。

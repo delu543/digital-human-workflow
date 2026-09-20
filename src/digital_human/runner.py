@@ -30,6 +30,10 @@ def run(job, storyboard=None, wait_seconds=0):
         elif mode=='mcp': return cloud.mcp_begin(job)
         else: return {'status':'needs_avatar','next':'Import the user authorized avatar video; no provider or account is selected automatically.'}
     if not job.artifact('captions'): alignment.align(job)
+    if brief.get('postproduction',{}).get('mode')=='independent':
+        return {'status':'needs_edit_plan','captions':str(job.artifact('captions')),
+            'next':'Codex prepares a semantic edit plan from clean digital-avatar media. Use edit-build; '
+                   'edit-render works without Jianying, edit-export is optional. Do not regenerate paid media.'}
     if not job.artifact('composition'):
         if not storyboard: return {'status':'needs_storyboard','captions':str(job.path/'captions.json'),'source_frames':media.frame(job),
             'next':'Codex designs semantic scenes and safe text placement, then passes --storyboard. The human need not hand-author JSON.'}

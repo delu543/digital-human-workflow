@@ -1,6 +1,6 @@
 # 采用的成熟方案
 
-接口依据核对日期：2026-09-19。供应商文档会变化；实际账号与接口响应优先，升级需重新跑对应测试。
+接口依据核对日期：2026-09-19；剪辑集成核对日期：2026-09-20。供应商文档会变化；实际账号与接口响应优先，升级需重新跑对应测试。
 
 | 依赖 | 版本/来源 | 采用范围与边界 |
 |---|---|---|
@@ -10,6 +10,11 @@
 | Noto CJK | [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk) | 仓库内原始字体 SHA-256 为 `2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b`，OFL 同目录 |
 | Requests / imageio-ffmpeg | 2.34.2 / 0.6.0 | HTTPS、便携编码器，无浏览器凭证抓取 |
 | FFprobe installer | 2.1.2 | 选当前平台预编译探测工具，固定 lock |
+| Jianying Local MCP | [Capricornus-joe/jianying-local-mcp](https://github.com/Capricornus-joe/jianying-local-mcp/tree/f47f907e7bc15e68082238e50ca5964c50b2f559)，v0.3.0 / MIT | 仅内置两个原样的纯序列化模块；来源和 SHA-256 见 `src/digital_human/vendor/jianying/SOURCE.json`。不启动其 MCP 服务，不采用删除式发布/回滚管理器，无新增网络和账号依赖 |
+
+剪映适配输出可编辑多轨草稿，路径由本产品单独复制、校验和重定位。上游有 Mac 剪映 11.4.0 的历史兼容证据；本次只验证序列化与本地素材完整性，未在目标客户版本实际打开/编辑/保存/重开/导出。不能推导成任意版本兼容，也不能把 Hyperframes 的任意 HTML 效果无损转为原生效果。剪映不适用时，独立 Hyperframes 路径仍可交付视频、字幕、媒体和工程。
+
+参考但未集成：[mcncarl/jianying-headless](https://github.com/mcncarl/jianying-headless/tree/344a78f179dc275d76fc39aaaaa27d325254c156)。本版采用其工作流思路：保留/删除决策、源时间到成片时间的映射、语音边界保护、分层交付、目标版本验收。该版本是个人学习/非商业许可，并依赖精确的 Mac/剪映原生版本；不复制源码、资源或二进制，不提供其受限的原生无头导出能力。商业使用该上游须另行获得作者许可。
 
 采用本地轻量编排而不引入通用队列/工作流服务器：目标是在个人 Codex 内执行，所需状态是每任务文件、锁和远端 ID；更大系统会增加部署与凭证暴露面。Whisper 转写并不保证每个专有名词正确，所以一致性检查失败必须回看音频，不能以“模型给了结果”为验收。
 

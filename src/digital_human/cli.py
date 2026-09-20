@@ -36,6 +36,14 @@ def parser():
     s=sub.add_parser('inspect-source');s.add_argument('job');s.add_argument('--file',required=True)
     s=sub.add_parser('add-image');s.add_argument('job');s.add_argument('--file',required=True)
     s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
+    s=sub.add_parser('add-media');s.add_argument('job');s.add_argument('--file',required=True)
+    s.add_argument('--kind',choices=['video','image','audio'],required=True)
+    s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
+    s=sub.add_parser('edit-build');s.add_argument('job');s.add_argument('--plan',required=True);s.add_argument('--name',required=True)
+    for name in ['edit-status','edit-compose','edit-render','edit-export','edit-verify','edit-review','edit-bundle','edit-seal']:
+        s=sub.add_parser(name);s.add_argument('job');s.add_argument('revision')
+        if name=='edit-review':s.add_argument('--file',required=True)
+    s=sub.add_parser('relink-draft');s.add_argument('--source',required=True);s.add_argument('--out',required=True)
     return p
 
 def add_image(job,args):
@@ -69,12 +77,40 @@ def execute(args):
     if args.command=='prepare':
         job=w.prepare(Path(args.script).read_text(encoding='utf-8'),read(args.brief) if args.brief else {},args.new)
         return {'job_id':job.path.name,'path':str(job.path),'state':job.load()['stage']}
+    if args.command=='relink-draft':
+        from .edit_jianying import relink
+        return relink(args.source,args.out)
     job=w.job(args.job)
     with job.locked():
         return execute_job(job,args)
 
 def execute_job(job,args):
     c=args.command
+    if c=='add-media':
+        from .editing import add_asset
+        return add_asset(job,args.file,args.kind,args.source,args.rights)
+    if c=='edit-build':
+        from .editing import build
+        return build(job,read(args.plan),args.name)
+    if c.startswith('edit-'):
+        from . import editing
+        child=editing.revision(job,args.revision)
+        if c=='edit-status':return child.load()
+        if c=='edit-compose':return editing.compose(child)
+        if c=='edit-export':return editing.export(child)
+        if c=='edit-seal':
+            if child.artifact('render') or child.artifact('jianying_draft'):
+                raise WorkflowError('此修订已渲染或导出原生工程；请另建修订，不覆盖或制造不一致交付')
+            child.record('composition','project/index.html')
+            state=child.load();state['custom_hyperframes']=True;child.save(state)
+            return {'saved':True,'native_export_available':False,'reason':'Custom HTML has no automatic native timeline mapping.'}
+        if c=='edit-render':
+            if not child.artifact('composition'):editing.compose(child)
+            if existing:=child.artifact('render'):return str(existing)
+            media.hf(child,'check');return media.hf(child,'render',timeout=3600)
+        if c=='edit-verify':return delivery.verify(child)
+        if c=='edit-review':return delivery.accept_review(child,args.file)
+        if c=='edit-bundle':return delivery.bundle(child)
     if c=='status': return job.load()
     if c=='quality-plan': return quality.save_plan(job, read(args.file) if args.file else None, args.reuse_baseline)
     if c=='voice-review': return quality.review_voice(job, read(args.file))

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "digital-human-workflow"
-version = "0.2.1"
+version = "0.3.0"
 description = "数字人工作流：由 Codex 编排的个人数字人视频制作工具"
 requires-python = ">=3.11"
 dependencies = ["requests==2.34.2", "imageio-ffmpeg==0.6.0"]
@@ -15,3 +15,6 @@ digital-human = "digital_human.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"digital_human.vendor.jianying" = ["LICENSE", "THIRD_PARTY_NOTICES.md", "SOURCE.json", "third_party_licenses/*.txt"]

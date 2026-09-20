@@ -1,0 +1,13 @@
+{
+  "schema": "digital-human-edit/v1",
+  "presenter": {
+    "fit": "contain"
+  },
+  "captions": {
+    "style": {
+      "font_size": 48,
+      "color": "#FFFFFF",
+      "y": -0.72
+    }
+  }
+}

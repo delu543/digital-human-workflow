@@ -2,6 +2,8 @@
 
 `DH` 的解释见 SKILL.md。操作均针对用户私人工作区；JSON 由 Codex 编排，普通用户无需写命令。
 
+v0.3 新片默认采用独立后期：brief 加 `postproduction.mode=independent`，以干净数字人素材完成下面第 1–3 步，随后按 [editing.md](editing.md) 执行剪辑、渲染和可选剪映导出。第 4–8 步保留为原有 storyboard/复杂 Hyperframes 路径；无需为了选择后期工具重生成声像。全流程维持数字人出镜，不自动切换到真人实拍。
+
 1. 保存用户文案到工作区 `inputs/script.txt`，视觉要求写 `brief.json`。忠实保留原稿，预估五分钟只能作为计划；不要静默扩写或剪短。`DH prepare --script <路径> --brief <路径>` 返回任务 ID。保存这个 ID，后续只恢复它。
 2. 先按 [真人感流程](realism.md) 和 [提示词库](prompts.md) 完成 `quality-plan`，检查来源、静态形象、动作匹配与当前模型支持。旧模板用 `--reuse-baseline`，过期能力信息只读刷新；新模板使用有时长上限的 calibration。`run` 返回 `needs_quality_plan` 时这是 Codex 的工作，不能绕过它调用云端。计划通过后 `DH run <id>` 生成/复用配音，返回 `needs_voice_review`；实际试听，按当前 SHA256 完成 `voice-review`。随后 `DH run <id> --wait-seconds 30` 才提交 HeyGen。新模板短片需用户认可后 `accept-baseline`，再制作正式长片。API 完成后下载，MCP 按下一节执行。旧任务恢复原 ID，不重放收费请求；`import` 路径仍可用 `DH import <id> --voice <音频> --avatar <视频>` 做纯本地包装。
 3. 字幕从实际数字人音轨提取。默认本地 whisper.cpp DTW，不外传给转写网站。如果原稿与转写不一致，检查发音、专有名词、标点/繁简差异及原始声学 token；可提供有音频依据的修正 token 文件给 `DH align <id> --transcript <文件>`，格式 `[{"text":"实际词","start":实际秒数}]`。不能按字数造时间，不能猜改听不清的内容。需要更强模型时用户安装受支持模型并设置 `DH_WHISPER_MODEL` 后 `align --model small/medium/large-v3`；不得循环盲目重做付费声音。
@@ -17,5 +19,6 @@
 
 - `upload_audio_with_official_mcp`：查当前官方工具，申请音频 direct upload，回执保存到工作区私有 `receipts/`；`DH put-upload <id> --receipt <回执>` 只上传本任务配音，再调用官方 complete upload，`DH record-remote <id> --asset-id <返回ID>`。
 - 再 `DH mcp-begin <id>` 会先保存预算与请求，返回精确的本人 avatar/audio 参数。调用官方 `create_video_from_avatar` **一次**，不使用自动代写、自动选人或内置 TTS 的泛化接口。
+- 此步仅生成干净人物口播，不让 HeyGen 烧录后期字幕、配乐或插片；按实际工具 schema 使用明确支持的参数，不发明 caption 开关。完成后检查是否带有非预期包装，保留平台要求的水印。
 - 返回视频 ID 后立即 `DH record-remote <id> --video-id <ID>`，并遵守工具要求调用 `show_video`。若工具禁止后续状态查询，停止该依赖阶段，等待用户允许的“继续”或工具通知；保存 ID，不重建视频。工具不支持所需动作时明确报告，不使用隐藏网页接口绕过。
 - 获得已完成回执后保存 JSON，`DH receive <id> --receipt <回执>` 下载并校验，继续 `run`。不得把签名下载 URL 或 OAuth 令牌写进公开文本。

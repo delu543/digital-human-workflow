@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/Capricornus-joe/jianying-local-mcp",
+  "commit": "f47f907e7bc15e68082238e50ca5964c50b2f559",
+  "license": "MIT",
+  "modified": false,
+  "scope": "Only pure native serializers; no MCP runtime or filesystem mutators",
+  "sha256": {
+    "jianying_local_mcp/native.py": "48de9a12e42cefc2d6e751ce7a56e95184ab83f4450d89775691a44203f88fa0",
+    "jianying_local_mcp/advanced_native.py": "6dcc6752048cbec0b33a6bcf5324180bd381c9398d8c916f4e03ccdb39f745b9",
+    "LICENSE": "0374cd79de173c9b4c678855430803195a1cdd10997282001d997fb0a9dfde8e",
+    "THIRD_PARTY_NOTICES.md": "26bcc79810647db71af5af097a172b9b1ec4cc07699403a9ef375c024479a5a2",
+    "third_party_licenses/pyJianYingDraft-Apache-2.0.txt": "308aaff89f5e69a7d715885bc8cc5f0001bfed9db7e5c056496be559c6e27455",
+    "third_party_licenses/VectCutAPI-Apache-2.0.txt": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "third_party_licenses/video-shotcraft-Apache-2.0.txt": "b2ce9877a55547ada9b870150664d1468ff777e67cc9888806a73927d31c5771",
+    "third_party_licenses/capcut-cli-MIT.txt": "21508e18e61118a79d3e3383254607fc1b5c1f4aa8b8f0dab46c368cd206a708"
+  }
+}

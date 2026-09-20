@@ -99,16 +99,27 @@ def bundle(job):
         validate_motion_review(review, read(job.path/'technical-checks.json')['duration'])
     mandatory=['script.txt','brief.json','storyboard.json','captions.json','timeline.json','sources.json',
         'subtitles.srt','checks.json','technical-checks.json','review.json','render-provenance.json']
+    if job.load().get('edit_version'):
+        job.artifact('edit_plan');job.artifact('edit_timeline')
+        mandatory+=['edit-plan.json','edit-lineage.json']
     paths=set(mandatory+[str(video.relative_to(job.path))])
     for kind in ['voice','avatar','narration']:
         if artifact:=job.artifact(kind): paths.add(str(artifact.relative_to(job.path)))
-    allowed={'.html','.js','.css','.json','.otf','.woff2','.txt','.svg','.png','.jpg','.jpeg','.webp','.mp3','.wav','.mp4','.webm'}
+    allowed={'.html','.js','.css','.json','.otf','.woff2','.txt','.svg','.png','.jpg','.jpeg','.webp','.mp3','.m4a','.wav','.mp4','.mov','.webm'}
     for path in (job.path/'project').rglob('*'):
         if path.is_file() and path.suffix.lower() in allowed:
             rel=path.relative_to(job.path)
             if path.name in ['profile.json','secrets.json'] or any(x.startswith('.') for x in rel.parts):
                 raise WorkflowError('工程包含私人配置或隐藏文件，不能打包')
             paths.add(str(rel))
+    if draft:=job.artifact('jianying_draft'):
+        report=read(draft);root=draft.parent
+        paths.add(str(draft.relative_to(job.path)))
+        for item in report['files']:
+            p=within(root,item['path'])
+            if p.suffix.lower() not in allowed or file_hash(p)!=item['sha256']:
+                raise WorkflowError('剪映交接文件变化或格式无效；不能包装旧计划覆盖手工修改')
+            paths.add(str(p.relative_to(job.path)))
     manifest=[]
     for rel in sorted(paths):
         p=within(job.path,rel)

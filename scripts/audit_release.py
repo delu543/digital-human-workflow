@@ -26,7 +26,7 @@ def main():
         p=Path(name)
         if any(part in forbidden_parts for part in p.parts) or p.name in {'profile.json','secrets.json','.env'} or p.name.startswith('.env.'):
             problems.append(name+': private path');continue
-        if p.suffix not in text_ext and name not in {font,'LICENSE','.gitignore'}:
+        if p.suffix not in text_ext and name not in {font,'LICENSE','.gitignore','src/digital_human/vendor/jianying/LICENSE'}:
             problems.append(name+': unreviewed binary/type');continue
         body=git('show',':'+name)
         if name==font:
