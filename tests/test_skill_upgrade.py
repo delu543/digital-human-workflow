@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -7,6 +8,17 @@ import unittest
 from digital_human.storage import ROOT
 
 class SkillUpgradeTests(unittest.TestCase):
+    def test_install_and_cli_json_work_with_legacy_console_encoding(self):
+        with tempfile.TemporaryDirectory() as folder:
+            env=dict(os.environ,PYTHONIOENCODING='cp1252')
+            destination=Path(folder)/'中文路径'
+            args=[sys.executable,str(ROOT/'scripts/install_skill.py'),'--destination',str(destination),'--copy']
+            for extra in [[],['--update']]:
+                out=subprocess.run(args+extra,env=env,check=True,capture_output=True)
+                self.assertTrue(json.loads(out.stdout)['ok'])
+            cli=subprocess.run([sys.executable,'-m','digital_human','--workspace',str(destination/'data'),'init'],env=env,check=True,capture_output=True)
+            self.assertTrue(json.loads(cli.stdout)['ok'])
+
     def test_owned_copy_updates_and_preserves_backup(self):
         with tempfile.TemporaryDirectory() as folder:
             args=[sys.executable,str(ROOT/'scripts/install_skill.py'),'--destination',folder,'--copy']

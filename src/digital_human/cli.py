@@ -131,9 +131,9 @@ def main(argv=None):
     try:
         result=execute(args)
     except WorkflowError as exc:
-        print(json.dumps({'ok':False,'error':str(exc)},ensure_ascii=False));raise SystemExit(2)
+        print(json.dumps({'ok':False,'error':str(exc)},ensure_ascii=True));raise SystemExit(2)
     except (FileNotFoundError,KeyError,TypeError,ValueError):
-        print(json.dumps({'ok':False,'error':'输入文件缺失或格式不符；检查当前阶段所需文件，不重放付费请求。'},ensure_ascii=False));raise SystemExit(2)
-    print(json.dumps({'ok':True,'result':result},ensure_ascii=False,indent=2))
+        print(json.dumps({'ok':False,'error':'输入文件缺失或格式不符；检查当前阶段所需文件，不重放付费请求。'},ensure_ascii=True));raise SystemExit(2)
+    print(json.dumps({'ok':True,'result':result},ensure_ascii=True,indent=2))
 
 if __name__=='__main__':main()

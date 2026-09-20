@@ -6,7 +6,7 @@ Codex 负责理解文案、分镜与执行，MiniMax 负责用户自己的声音
 
 这是可安装的通用工作流与 Codex Skill，不包含作者账号、录音、私人文案、形象、密钥或个人配置。每位用户在自己的电脑保存自己的素材与账户设置。
 
-当前版本 **v0.2.0**：增加素材诊断、分层提示词、当次配音验收、可复用真人感基线和动态检查。详见 [更新记录](CHANGELOG.md) 与 [真人感流程](skills/digital-human-workflow/references/realism.md)。
+当前版本 **v0.2.1**：增加素材诊断、分层提示词、当次配音验收、可复用真人感基线和动态检查。详见 [更新记录](CHANGELOG.md) 与 [真人感流程](skills/digital-human-workflow/references/realism.md)。
 
 ## 给第一次使用的人
 
