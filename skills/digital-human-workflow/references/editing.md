@@ -7,20 +7,20 @@
 - MiniMax：已认可音色的配音。先把表达、停顿和读音做好，再生成口型。
 - HeyGen：干净的数字人口播，保留平台要求的标记；不要求它同时加字幕、音乐、插片、镜头转场。使用用户本人 avatar 与已确认 audio 的专用接口，不自动改用 Video Agent 代写整片。接口没有某个开关时不能捏造参数。
 - Codex：语义分镜、剪辑判断、素材登记、调用与验收。分离制作便于精修，不代表人物自然度自动提高。
-- 后期：用户明确选剪映就走剪映；明确不用剪映就直接本地 Hyperframes。没有偏好时，MP4 交付用 Hyperframes，需要 Mac 剪映二次编辑时额外交付原生草稿。两者共用剪辑时间轴，无需先用一个再用另一个。
+- 后期默认用本地 Hyperframes 直接出片。只有用户明确说“使用剪映自动剪辑”或等价地选择剪映执行时，才操作剪映；“自动剪辑”“效果丰富”“可编辑”本身不触发它。仅要求剪映工程时导出草稿，不自动打开应用执行。两条路径共用剪辑时间轴，无需串行经过两套工具。
 
 流程固定的是依赖：配音确定后口型；真实声音后对齐；实际素材到齐后最终时间轴。视觉设计、插片准备可提前进行。剪辑软件、字幕样式和效果数量不写死。
 
 ## 可执行入口
 
-`DH` 见 SKILL.md。新制作的 brief 使用 `"postproduction":{"mode":"independent","editor":"auto"}`；editor 是 Codex 的路由偏好，可为 auto/hyperframes/jianying/both。`run` 完成声像和字幕后返回 `needs_edit_plan`。下面的 JSON 和命令由 Codex 编写与执行，不让用户手工操作。
+`DH` 见 SKILL.md。新制作的 brief 使用 `"postproduction":{"mode":"independent","editor":"auto"}`；editor 是 Codex 的路由偏好，可为 auto/hyperframes/jianying/both；auto 默认 hyperframes，jianying/both 只在用户明确选择对应交付时使用。`run` 完成声像和字幕后返回 `needs_edit_plan`。下面的 JSON 和命令由 Codex 编写与执行，不让用户手工操作。
 
 1. 读取 `captions.json`、实际音视频和用户要求。旧任务也能直接进入，不改变原 job 状态或收费记录。
 2. 需要视频插片、配图、音乐/音效时，先 `DH add-media JOB --file FILE --kind video|image|audio --source SOURCE --rights RIGHTS`。只接受本地文件；素材 ID 来自返回值，不能猜测。本人主画面继续用已登记 avatar，插片可用有权使用的现成素材或已获准工具生成的文件。
 3. 参考仓库 `examples/edit-plan.json`。创建计划后执行 `DH edit-build JOB --plan FILE --name v1`，生成 `jobs/JOB/edits/v1` 的独立修订。新的修改用 v2/v3，不覆盖旧版本。收费声像完全复用。
 4. 本地成片：`DH edit-render JOB v1` 会创建 Hyperframes 工程、检查并渲染；`DH edit-verify JOB v1` 全解码并抽帧。图解/复杂排版也可选原有 storyboard + Hyperframes 路径；不为剪映交付静默把效果压平成视频。
-5. 可选剪映：`DH edit-export JOB v1` 创建 `exports/jianying`，含原生文字、多轨媒体和可重定位计划。它不注册剪映首页、不调用内部引擎、不自动导出 MP4，不能把返回的 `native_app_verified:false` 当成通过。
-6. 视听检查后，按 production.md 的真实证据要求执行 `DH edit-review JOB v1 --file REVIEW`、`DH edit-bundle JOB v1`。ZIP 含已经创建的剪映交接包（如有）。后补剪映工程应使用新修订，不能声称旧 ZIP 自动包含它。
+5. 用户明确要求剪映工程时：`DH edit-export JOB v1` 创建 `exports/jianying`，含原生文字、多轨媒体和可重定位计划。它不注册剪映首页、不调用内部引擎、不自动导出 MP4，不能把返回的 `native_app_verified:false` 当成通过。
+6. 不需要剪映时跳过第 5 步，不为“以后可能要用”预先复制媒体或生成工程。保留标准素材、SRT 与时间轴即可按需导出。视听检查后，按 production.md 的真实证据要求执行 `DH edit-review JOB v1 --file REVIEW`、`DH edit-bundle JOB v1`。ZIP 含已经创建的剪映交接包（如有）。后补剪映工程应使用新修订，不能声称旧 ZIP 自动包含它。
 
 若选用复杂 Hyperframes 设计，可在尚未渲染/导出剪映的修订内修改 `project/`，再 `DH edit-seal JOB v1`、`DH edit-render JOB v1`。seal 会标记自定义 HTML；这个修订不能再从旧时间轴导出剪映，避免两个交付的实际内容不一致。需要原生工程时在另一修订用计划表达可映射效果。
 
