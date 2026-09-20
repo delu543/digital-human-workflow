@@ -5,6 +5,7 @@ import re
 from .storage import ROOT, WorkflowError, read, write
 
 HOSTS = {'international': 'https://api.minimax.io', 'china': 'https://api.minimaxi.com'}
+OPTIONAL = {'minimax': {'emotion'}, 'heygen': {'reference_look_id', 'motion_prompt'}}
 
 def number(value, minimum=0, maximum=1e9):
     return type(value) in (int, float) and math.isfinite(value) and minimum <= value <= maximum
@@ -14,8 +15,10 @@ def validate(profile):
     if set(profile) != set(template) or profile['schema_version'] != 1:
         raise WorkflowError('配置版本或字段无效')
     for key in template:
-        if isinstance(template[key], dict) and set(profile[key]) != set(template[key]):
-            raise WorkflowError('配置字段无效：' + key)
+        if isinstance(template[key], dict):
+            allowed = set(template[key]); required = allowed - OPTIONAL.get(key, set())
+            if not isinstance(profile[key], dict) or not required <= set(profile[key]) <= allowed:
+                raise WorkflowError('配置字段无效：' + key)
     f = profile['format']; m = profile['minimax']; h = profile['heygen']
     if any(type(f[k]) is not int for k in f) or not (240 <= f['width'] <= 3840 and 240 <= f['height'] <= 3840):
         raise WorkflowError('视频尺寸无效')
@@ -27,9 +30,21 @@ def validate(profile):
         raise WorkflowError('请选择 HeyGen MCP、API 或导入方式，并设置有效模型')
     if h['resolution'] not in ['720p', '1080p', '4k']:
         raise WorkflowError('HeyGen 分辨率无效')
-    for value in [m['voice_id'], h['avatar_id']]:
+    for value in [m['voice_id'], h['avatar_id'], h.get('reference_look_id')]:
         if value is not None and not re.fullmatch(r'[A-Za-z0-9_-]{1,150}', value):
             raise WorkflowError('声音或形象 ID 格式无效')
+    emotion = m.get('emotion')
+    if emotion not in [None, 'happy', 'sad', 'angry', 'fearful', 'disgusted', 'surprised', 'calm', 'fluent', 'whisper']:
+        raise WorkflowError('不支持的情绪参数；默认 null 让模型依文意自动处理')
+    if emotion in ['fluent', 'whisper'] and m['model'] not in ['speech-2.6-hd', 'speech-2.6-turbo']:
+        raise WorkflowError('当前已核实 fluent/whisper 仅支持 speech-2.6-hd/turbo，不自动换模型')
+    motion = h.get('motion_prompt')
+    if motion is not None and (not isinstance(motion, str) or not motion.strip() or len(motion) > 240):
+        raise WorkflowError('动作提示词用1–2个短分句（最多240字符），默认 null')
+    if h.get('reference_look_id') and h['engine'] != 'avatar_v':
+        raise WorkflowError('reference_look_id 仅用于 Avatar V')
+    if motion and h['engine'] not in ['avatar_iv', 'avatar_v']:
+        raise WorkflowError('当前引擎不支持 motion_prompt')
     style = profile['style']
     if style['preset'] not in ['editorial', 'minimal'] or not re.fullmatch(r'#[0-9A-Fa-f]{6}', style['accent']):
         raise WorkflowError('视觉预设或颜色无效')
@@ -52,7 +67,7 @@ def configure(workspace, patch):
         if section not in p or not isinstance(p[section], dict) or not isinstance(values, dict):
             raise WorkflowError('仅支持已定义配置分区')
         for key, value in values.items():
-            if key not in p[section]:
+            if key not in p[section] and key not in OPTIONAL.get(section, set()):
                 raise WorkflowError('未知配置字段：' + key)
             p[section][key] = value
     validate(p); write(workspace.path / 'profile.json', p)

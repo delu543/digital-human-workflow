@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "mode": "calibration",
+  "sample_max_seconds": 15,
+  "source_review": {
+    "provenance": "待核实原片与当前形象的来源关系",
+    "observations": "待检查眼部、光线、面部大小和动作",
+    "evidence": "填写实际查看文件和连续片段时间"
+  },
+  "look_review": {
+    "identity": false,
+    "eyes": false,
+    "hands": false,
+    "lighting": false,
+    "contact": false,
+    "evidence": "逐项检查静态形象；未知不能填通过"
+  },
+  "motion_review": {
+    "pose_matches": false,
+    "camera_angle_matches": false,
+    "evidence": "对照目标与参考的实际姿势和机位"
+  },
+  "capability": {
+    "avatar_id": "USER_LOOK_ID",
+    "engine": "avatar_v",
+    "supported_api_engines": [],
+    "reference_look_id": null,
+    "reference_eligible": false,
+    "checked_at": null,
+    "evidence": "从当前账户只读查询实际能力与同意状态"
+  }
+}

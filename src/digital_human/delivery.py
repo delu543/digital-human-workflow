@@ -1,11 +1,33 @@
 """Technical verification, explicit perceptual review, and an allowlisted asset ZIP."""
 import json
+import math
 import re
 import zipfile
 from fractions import Fraction
 from pathlib import Path
 from . import media
 from .storage import WorkflowError, file_hash, read, write, within
+
+def perceptual_fields(job):
+    basic = ['identity','voice','captions','visuals','sync']
+    return basic + (['motion','scene'] if job.load().get('quality_version') else [])
+
+def validate_motion_review(value, duration):
+    segments = value.get('inspected_segments')
+    if not isinstance(segments, list) or not segments:
+        raise WorkflowError('需记录实际抽看的动态片段，静态截帧不能证明眼神/手势/口型自然')
+    from .quality import evidence
+    for segment in segments:
+        a, b = segment.get('start'), segment.get('end')
+        if any(type(x) not in [int,float] or not math.isfinite(x) for x in [a,b]) or not 0 <= a < b <= duration:
+            raise WorkflowError('动态验收片段时间无效')
+        if segment.get('method') not in ['video_playback','user_confirmation']:
+            raise WorkflowError('动态验收需实际播放或用户确认，不能只看截帧')
+        evidence(segment.get('evidence'), 'inspected_segments')
+    audio = value.get('audio_review', {})
+    if audio.get('method') not in ['listened','user_confirmation','approved_source_comparison']:
+        raise WorkflowError('需记录成片音轨试听或与已认可声音比较的依据')
+    evidence(audio.get('evidence'), 'audio_review')
 
 def verify(job):
     video=job.artifact('render')
@@ -35,7 +57,7 @@ def verify(job):
         frames.append(str(path.relative_to(job.path)))
     result={'ok':True,'video_sha256':file_hash(video),'width':v['width'],'height':v['height'],
         'fps':v['avg_frame_rate'],'duration':duration,'audio_present':True,'decode':'passed',
-        'frames':frames,'perceptual_review_required':['identity','voice','captions','visuals','sync']}
+        'frames':frames,'perceptual_review_required':perceptual_fields(job)}
     write(job.path/'technical-checks.json',result)
     return result
 
@@ -43,10 +65,12 @@ def accept_review(job, path):
     value=read(path);technical=read(job.path/'technical-checks.json')
     if not technical.get('ok') or technical['video_sha256']!=file_hash(job.artifact('render')):
         raise WorkflowError('技术检查与当前成片不一致')
-    for name in ['identity','voice','captions','visuals','sync']:
+    for name in perceptual_fields(job):
         item=value.get(name,{})
         if item.get('status')!='passed' or len(item.get('evidence','').strip())<8:
             raise WorkflowError('缺少真实验收依据：'+name)
+    if job.load().get('quality_version'):
+        validate_motion_review(value, technical['duration'])
     for ref in value.get('inspected_frames',[]):
         if not within(job.path,ref).is_file(): raise WorkflowError('验收截帧不存在')
     if not value.get('inspected_frames'):
@@ -69,8 +93,10 @@ def bundle(job):
     video=job.artifact('render');review=read(job.path/'review.json')
     if not video or review.get('video_sha256')!=file_hash(video):
         raise WorkflowError('验收结果不属于当前视频')
-    for name in ['identity','voice','captions','visuals','sync']:
+    for name in perceptual_fields(job):
         if review.get(name,{}).get('status')!='passed': raise WorkflowError('尚未通过验收：'+name)
+    if job.load().get('quality_version'):
+        validate_motion_review(review, read(job.path/'technical-checks.json')['duration'])
     mandatory=['script.txt','brief.json','storyboard.json','captions.json','timeline.json','sources.json',
         'subtitles.srt','checks.json','technical-checks.json','review.json','render-provenance.json']
     paths=set(mandatory+[str(video.relative_to(job.path))])

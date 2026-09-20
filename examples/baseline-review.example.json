@@ -1,0 +1,34 @@
+{
+  "identity": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "gaze": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "motion": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "scene": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "sync": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "voice": {
+    "status": "pending",
+    "evidence": "填写短样片逐段视听后的实际结论"
+  },
+  "avatar_sha256": "SHA256_OF_EXACT_AVATAR_FILE",
+  "user_accepted": false,
+  "user_evidence": "填写用户对这份样片的真实认可",
+  "inspected_segments": [],
+  "audio_review": {
+    "method": "pending",
+    "evidence": "填写实际试听依据"
+  }
+}

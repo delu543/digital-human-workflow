@@ -1,11 +1,11 @@
 """Paid boundaries and recovery from saved receipts; no implicit submission retry."""
 import os
 from .budget import quote, reserve, settle, unresolved, require_consent, check_budget
-from . import media
+from . import media, quality
 from .network import download
 from .storage import WorkflowError, read, write
 from .providers.minimax import MiniMax
-from .providers.heygen import HeyGen
+from .providers.heygen import HeyGen, avatar_payload
 
 def unwrap(result):
     if 'content' in result:
@@ -41,7 +41,20 @@ def speech(job, provider=None, voice_id=None):
 
 def submit_avatar(job, provider=None):
     if existing:=job.artifact('avatar'): return {'status':'completed','path':str(existing)}
+    existing_op = job.load()['operations'].get('avatar')
+    if existing_op:
+        if existing_op['status'] == 'failed':
+            raise WorkflowError('远端任务已失败，请核对原因；不自动重试')
+        video_id = existing_op.get('video_id') or job.load()['remote'].get('video_id')
+        receipt = job.path/'receipts/heygen-create.json'
+        if not video_id and receipt.exists():
+            result = unwrap(read(receipt)); video_id = result.get('video_id') or result.get('id')
+        if video_id:
+            record_remote(job, video_id=video_id)
+            return {'status':'submitted','video_id':video_id}
+        unresolved('数字人生成')
     p=require_consent(job,['heygen'])
+    quality.require_avatar_ready(job)
     api=provider or HeyGen(job.workspace,job.profile())
     voice=job.artifact('voice')
     if not voice: raise WorkflowError('必须先取得最终配音')
@@ -122,7 +135,16 @@ def record_remote(job, video_id=None, asset_id=None):
 
 def mcp_begin(job):
     if job.profile()['heygen']['transport']!='mcp': raise WorkflowError('当前不是会员 MCP 路径')
+    meta = job.load()
+    if 'avatar' in meta['operations']:
+        op = meta['operations']['avatar']
+        if op['status'] == 'failed':
+            raise WorkflowError('远端任务已失败，不自动重试')
+        video_id = op.get('video_id') or meta['remote'].get('video_id')
+        if video_id: return {'action':'resume_existing','video_id':video_id}
+        unresolved('会员数字人请求')
     p=require_consent(job,['heygen']);voice=job.artifact('voice')
+    quality.require_avatar_ready(job)
     if not voice: raise WorkflowError('先完成配音')
     meta=job.load();asset=meta['remote'].get('audio_asset_id')
     costs=quote(p,'heygen',media.seconds(voice))
@@ -131,11 +153,7 @@ def mcp_begin(job):
         return {'action':'upload_audio_with_official_mcp','path':str(voice),
             'size_bytes':voice.stat().st_size,'content_type':'audio/mpeg',
             'next':'Record the returned asset ID using record-remote, then call mcp-begin again.'}
-    h=p['heygen'];fmt=p['format']
-    if not h['avatar_id']: raise WorkflowError('没有确认的本人数字人 look ID')
-    args={'avatarId':h['avatar_id'],'audioAssetId':asset,'engine':{'type':h['engine']},
-        'resolution':h['resolution'],'aspectRatio':'9:16' if fmt['height']>fmt['width'] else ('16:9' if fmt['width']>fmt['height'] else '1:1'),
-        'fit':'contain','outputFormat':'mp4','title':'Digital Human '+job.path.name,'callbackId':job.path.name}
+    args=avatar_payload(job.profile(),asset,job.path.name,mcp=True)
     op,fresh=reserve(job,'avatar','heygen',args,costs)
     if not fresh:
         if op.get('video_id'): return {'action':'resume_existing','video_id':op['video_id']}

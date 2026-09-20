@@ -3,13 +3,13 @@
 `DH` 的解释见 SKILL.md。操作均针对用户私人工作区；JSON 由 Codex 编排，普通用户无需写命令。
 
 1. 保存用户文案到工作区 `inputs/script.txt`，视觉要求写 `brief.json`。忠实保留原稿，预估五分钟只能作为计划；不要静默扩写或剪短。`DH prepare --script <路径> --brief <路径>` 返回任务 ID。保存这个 ID，后续只恢复它。
-2. `DH run <id> --wait-seconds 30`。API 路径先 MiniMax 配音，再 HeyGen 对口型，完成后下载。继续等待时恢复同一 ID；前一次任务尚未完成不重复生成。MCP 按下一节执行；`import` 路径用 `DH import <id> --voice <音频> --avatar <视频>`。
+2. 先按 [真人感流程](realism.md) 和 [提示词库](prompts.md) 完成 `quality-plan`，检查来源、静态形象、动作匹配与当前模型支持。旧模板用 `--reuse-baseline`，过期能力信息只读刷新；新模板使用有时长上限的 calibration。`run` 返回 `needs_quality_plan` 时这是 Codex 的工作，不能绕过它调用云端。计划通过后 `DH run <id>` 生成/复用配音，返回 `needs_voice_review`；实际试听，按当前 SHA256 完成 `voice-review`。随后 `DH run <id> --wait-seconds 30` 才提交 HeyGen。新模板短片需用户认可后 `accept-baseline`，再制作正式长片。API 完成后下载，MCP 按下一节执行。旧任务恢复原 ID，不重放收费请求；`import` 路径仍可用 `DH import <id> --voice <音频> --avatar <视频>` 做纯本地包装。
 3. 字幕从实际数字人音轨提取。默认本地 whisper.cpp DTW，不外传给转写网站。如果原稿与转写不一致，检查发音、专有名词、标点/繁简差异及原始声学 token；可提供有音频依据的修正 token 文件给 `DH align <id> --transcript <文件>`，格式 `[{"text":"实际词","start":实际秒数}]`。不能按字数造时间，不能猜改听不清的内容。需要更强模型时用户安装受支持模型并设置 `DH_WHISPER_MODEL` 后 `align --model small/medium/large-v3`；不得循环盲目重做付费声音。
 4. `needs_storyboard` 后实际查看源视频截帧和 `captions.json`。为文意选标题、关键词、步骤、图解/配图；卡片安排在空白区域，留五官、口型与平台边栏安全区。五分钟视频应有随论证变化的画面，不机械每句一张卡。参考仓库 `examples/storyboard.json` 的字段，`start_caption` 是从0开始的字幕编号。
 5. 图片先 `DH add-image <id> --file <本地图片> --source <来源说明> --rights <权利依据>`，再在 storyboard 引用返回的相对路径。SVG 图解可本地制作；照片用用户授权图片或已获准的图像工具。数据柱图必须有真实数据与来源，不为视觉效果杜撰。新增图片工具的付费/上传需在用户授权内。
 6. `DH run <id> --storyboard <分镜文件>` 自动合成、检查、渲染。内置 title/steps/bars/image；复杂视觉可编辑该任务 `project/` 的 Hyperframes HTML/GSAP，动画按真实时间轴编排，媒体和字体保持本地。先读 Hyperframes 当前文档/已安装技能，编辑后 `DH seal-project <id>`、`DH check <id>`、`DH render <id>`。已渲染的版本须新任务导入音视频保留历史，不能覆盖。
-7. `DH verify <id>` 验证尺寸、音轨、时长、全文件解码和工程版本并抽取成片帧。实际查看全部截帧；抽看开头、中间、结尾及所有转场，核对人物、声音、字幕、图解与口型。如当前工具不能听/播放，不虚构已听；首次请用户做必要试听，后续可引用已验收源音频并检查音轨/同步证据。
-8. 按仓库 `examples/review.example.json` 写真实证据，`DH review <id> --file <验收文件>`、`DH bundle <id>`。提供 `exports/final.mp4`、`subtitles.srt`、`exports/完整素材包.zip`。包内含文案、分镜、原始声像、字幕、素材来源、可编辑工程、检查与清单；不含密钥、账号配置和云端签名回执。素材包本身属于用户私人交付，不能上传到公共仓库。
+7. `DH verify <id>` 验证尺寸、音轨、时长、全文件解码和工程版本并抽取成片帧。可用 `DH inspect-source <id> --file <成片路径>` 提取连续检查片段；实际查看全部截帧，抽看开头、中间、结尾及所有转场，核对人物、声音、字幕、图解与口型。只看截图不能证明动态自然。如当前工具不能听/播放，不虚构已听；仅请用户完成这一项必要视听，或在合适情形引用已认可原声及可核实的音轨比较证据。
+8. 按仓库 `examples/review.example.json` 写真实证据。新任务需包含 motion、scene、`inspected_segments`（start/end/method/evidence）与 `audio_review`。动态 method 为 video_playback 或 user_confirmation；音轨为 listened/user_confirmation/approved_source_comparison，最后一项必须有已认可源音频及实际比较依据。执行 `DH review <id> --file <验收文件>`、`DH bundle <id>`。提供 `exports/final.mp4`、`subtitles.srt`、`exports/完整素材包.zip`。包内含文案、分镜、原始声像、字幕、素材来源、可编辑工程、检查与清单；不含密钥、账号配置、原始训练文件或云端签名回执。素材包本身属于用户私人交付，不能上传公共仓库。
 
 ## 会员 MCP 的实际执行
 

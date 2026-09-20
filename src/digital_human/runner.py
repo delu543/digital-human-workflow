@@ -1,16 +1,22 @@
 """Resume until the next real dependency; completed paid steps are never replayed."""
 import time
-from . import alignment, cloud, composition, delivery, media
+from . import alignment, cloud, composition, delivery, media, quality
 from .storage import WorkflowError, read
 
 def run(job, storyboard=None, wait_seconds=0):
     meta=job.load()
     if meta['stage']=='delivered': return {'status':'delivered','video':str(job.artifact('render')),'bundle':str(job.artifact('delivery'))}
     profile=job.profile();brief=read(job.path/'brief.json')
+    if profile['heygen']['transport'] in ['api', 'mcp']:
+        if gate := quality.next_gate(job): return gate
     if not job.artifact('voice') and not job.artifact('avatar'):
-        if brief.get('purpose')!='calibration' and not profile['approvals']['voice']:
+        calibration = brief.get('purpose') == 'calibration' or (
+            job.artifact('quality_plan') and read(job.artifact('quality_plan'))['mode'] == 'calibration')
+        if not calibration and not profile['approvals']['voice']:
             raise WorkflowError('正式制作前请先完成本人音色试听；校准任务使用 purpose=calibration')
         cloud.speech(job)
+    if profile['heygen']['transport'] in ['api', 'mcp']:
+        if gate := quality.next_gate(job): return gate
     if not job.artifact('avatar'):
         mode=profile['heygen']['transport']
         if mode=='api':

@@ -5,8 +5,10 @@ from .storage import WorkflowError, digest, now
 
 def require_consent(job, services, cloning=False):
     saved, current = job.profile(), job.workspace.profile()
+    from .config import OPTIONAL
     for provider in ['minimax', 'heygen']:
-        if saved[provider] != current[provider]:
+        defaults = {key: None for key in OPTIONAL.get(provider, set())}
+        if {**defaults, **saved[provider]} != {**defaults, **current[provider]}:
             raise WorkflowError('账号路径、声音或形象配置已变化，请创建新任务')
     auth = current['authorization']
     if not auth['generation'] or (cloning and not auth['voice_clone']):

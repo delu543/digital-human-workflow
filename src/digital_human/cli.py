@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import shutil
 import sys
-from . import alignment, cloud, composition, delivery, media
+from . import alignment, cloud, composition, delivery, media, quality
 from .config import configure, save_credential
 from .storage import WorkflowError, Workspace, file_hash, read, write, within
 
@@ -29,6 +29,11 @@ def parser():
     s=sub.add_parser('align');s.add_argument('job');s.add_argument('--transcript');s.add_argument('--model',default='base')
     s=sub.add_parser('compose');s.add_argument('job');s.add_argument('--storyboard',required=True)
     s=sub.add_parser('review');s.add_argument('job');s.add_argument('--file',required=True)
+    s=sub.add_parser('quality-plan');s.add_argument('job')
+    g=s.add_mutually_exclusive_group(required=True);g.add_argument('--file');g.add_argument('--reuse-baseline')
+    for name in ['voice-review', 'accept-baseline']:
+        s=sub.add_parser(name);s.add_argument('job');s.add_argument('--file',required=True)
+    s=sub.add_parser('inspect-source');s.add_argument('job');s.add_argument('--file',required=True)
     s=sub.add_parser('add-image');s.add_argument('job');s.add_argument('--file',required=True)
     s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
     return p
@@ -71,6 +76,10 @@ def execute(args):
 def execute_job(job,args):
     c=args.command
     if c=='status': return job.load()
+    if c=='quality-plan': return quality.save_plan(job, read(args.file) if args.file else None, args.reuse_baseline)
+    if c=='voice-review': return quality.review_voice(job, read(args.file))
+    if c=='accept-baseline': return quality.accept_baseline(job, read(args.file))
+    if c=='inspect-source': return media.inspect_source(job, args.file)
     if c=='speech': return cloud.speech(job)
     if c=='submit': return cloud.submit_avatar(job)
     if c=='poll': return cloud.poll_avatar(job)
@@ -78,9 +87,13 @@ def execute_job(job,args):
     if c=='record-remote': return cloud.record_remote(job,args.video_id,args.asset_id)
     if c=='receive': return cloud.receive_avatar(job,read(args.receipt))
     if c=='put-upload':
-        from .budget import require_consent
+        from .budget import require_consent, quote, check_budget
         from .network import put_presigned
-        require_consent(job,['heygen'])
+        current = require_consent(job,['heygen'])
+        quality.require_avatar_ready(job)
+        if 'avatar' in job.load()['operations']:
+            raise WorkflowError('已有口型请求，恢复原任务，不重新上传音频')
+        check_budget(job, quote(current, 'heygen', media.seconds(job.artifact('voice'))))
         slot=cloud.unwrap(read(args.receipt));voice=job.artifact('voice')
         if not voice: raise WorkflowError('无配音素材')
         result=put_presigned(slot['upload_url'],voice,slot.get('upload_headers',{'Content-Type':'audio/mpeg'}))

@@ -17,10 +17,13 @@ class MiniMax:
         voice_id = voice_id or m['voice_id']
         if not voice_id:
             raise WorkflowError('尚未绑定本人音色')
-        return {'model':m['model'], 'text':text, 'stream':False,
+        value = {'model':m['model'], 'text':text, 'stream':False,
             'voice_setting':{'voice_id':voice_id,'speed':m['speed'],'vol':1,'pitch':0},
             'audio_setting':{'sample_rate':32000,'bitrate':128000,'format':'mp3','channel':1},
             'language_boost':'Chinese', 'output_format':'hex', 'subtitle_enable':True}
+        if m.get('emotion'):
+            value['voice_setting']['emotion'] = m['emotion']
+        return value
 
     def speech(self, payload):
         return self.client.call('POST', '/v1/t2a_v2', payload)

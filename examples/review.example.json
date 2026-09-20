@@ -1,8 +1,36 @@
 {
-  "identity": {"status": "pending", "evidence": "填写实际核对的本人形象与已验收样片依据"},
-  "voice": {"status": "pending", "evidence": "填写实际试听或已认可原声及音轨校验依据"},
-  "captions": {"status": "pending", "evidence": "填写逐句核对文字、起止时间和遮挡情况"},
-  "visuals": {"status": "pending", "evidence": "填写实际查看的布局、配图、动画、来源和转场依据"},
-  "sync": {"status": "pending", "evidence": "填写实际检查开头、中间、结尾口型和声画偏移的依据"},
-  "inspected_frames": []
+  "identity": {
+    "status": "pending",
+    "evidence": "填写实际核对的本人形象与已验收样片依据"
+  },
+  "voice": {
+    "status": "pending",
+    "evidence": "填写实际试听或已认可原声及音轨校验依据"
+  },
+  "captions": {
+    "status": "pending",
+    "evidence": "填写逐句核对文字、起止时间和遮挡情况"
+  },
+  "visuals": {
+    "status": "pending",
+    "evidence": "填写实际查看的布局、配图、动画、来源和转场依据"
+  },
+  "sync": {
+    "status": "pending",
+    "evidence": "填写实际检查开头、中间、结尾口型和声画偏移的依据"
+  },
+  "inspected_frames": [],
+  "motion": {
+    "status": "pending",
+    "evidence": "填写连续片段里眼神、口型与动作观察"
+  },
+  "scene": {
+    "status": "pending",
+    "evidence": "填写光线、透视、接触和身份连续性观察"
+  },
+  "inspected_segments": [],
+  "audio_review": {
+    "method": "pending",
+    "evidence": "填写成片音轨试听或比较依据"
+  }
 }

@@ -124,7 +124,7 @@ class Workspace:
             (path / 'script.txt').write_text(script, encoding='utf-8')
             write(path / 'profile.json', profile); write(path / 'brief.json', brief)
             write(path / 'sources.json', [])
-            write(path / 'job.json', {'schema_version': 1, 'id': job_id, 'created_at': now(),
+            write(path / 'job.json', {'schema_version': 1, 'quality_version': 1, 'id': job_id, 'created_at': now(),
                 'fingerprint': key, 'script_sha256': file_hash(path / 'script.txt'),
                 'profile_sha256': file_hash(path / 'profile.json'), 'stage': 'prepared',
                 'operations': {}, 'artifacts': {}, 'remote': {}})

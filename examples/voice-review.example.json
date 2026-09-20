@@ -1,0 +1,20 @@
+{
+  "wording": {
+    "status": "pending",
+    "evidence": "填写对这份配音的真实试听依据"
+  },
+  "pronunciation": {
+    "status": "pending",
+    "evidence": "填写对这份配音的真实试听依据"
+  },
+  "pauses": {
+    "status": "pending",
+    "evidence": "填写对这份配音的真实试听依据"
+  },
+  "naturalness": {
+    "status": "pending",
+    "evidence": "填写对这份配音的真实试听依据"
+  },
+  "voice_sha256": "SHA256_OF_EXACT_VOICE_FILE",
+  "method": "pending"
+}

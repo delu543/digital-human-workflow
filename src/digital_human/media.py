@@ -104,6 +104,37 @@ def frame(job, times=None):
         results.append(str(path))
     return results
 
+def inspect_source(job, source):
+    """Local evidence, not an automatic face/exposure or training-data diagnosis."""
+    source = Path(source).expanduser().resolve()
+    if not source.is_file(): raise WorkflowError('源媒体不存在')
+    info = probe(source); sha = file_hash(source)
+    folder = job.path/'evidence'/('source-'+sha[:16]);folder.mkdir(parents=True, exist_ok=True)
+    duration = float(info['format']['duration'])
+    video = next((s for s in info['streams'] if s['codec_type']=='video'), None)
+    result = {'source_sha256':sha, 'source_path':str(source), 'duration':duration,
+        'streams':[{k:s[k] for k in ['codec_type','codec_name','width','height','avg_frame_rate',
+                    'pix_fmt','color_space','color_transfer','color_primaries','sample_rate','channels'] if k in s}
+                   for s in info['streams']], 'frames':[], 'clips':[],
+        'scope':'Local file only; provenance, face lighting, motion and training suitability require actual inspection.'}
+    if video:
+        result['hdr_preview_caution'] = video.get('color_transfer') in ['smpte2084','arib-std-b67']
+        for i, fraction in enumerate([.05, .45, .8]):
+            start = max(0, min(duration * fraction, duration - .05))
+            still, clip = folder/f'frame-{i}.jpg', folder/f'clip-{i}.mp4'
+            if not still.exists():
+                run([binary('ffmpeg'),'-v','error','-nostdin','-ss',str(start),'-i',source,
+                     '-frames:v','1','-vf','scale=720:-2',still])
+            end = min(duration, start+3)
+            if not clip.exists():
+                run([binary('ffmpeg'),'-v','error','-nostdin','-ss',str(start),'-i',source,
+                     '-t',str(end-start),'-vf','scale=720:-2','-c:v','libx264','-crf','20',
+                     '-pix_fmt','yuv420p','-c:a','aac','-movflags','+faststart',clip])
+            result['frames'].append(str(still))
+            result['clips'].append({'path':str(clip),'start':start,'end':end})
+    write(folder/'inspection.json',result)
+    return result
+
 def hf(job, command, output=None, timeout=1800):
     node = shutil.which('node')
     if not node:

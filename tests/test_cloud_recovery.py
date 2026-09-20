@@ -7,6 +7,7 @@ from digital_human import cloud
 from digital_human.config import configure
 from digital_human.network import Client, ProviderError
 from test_state_budget import ready
+from quality_fixtures import ready_avatar
 
 class FakeVoice:
     def __init__(self,fail=False):self.calls=0;self.fail=fail
@@ -33,7 +34,8 @@ class CloudTests(unittest.TestCase):
         self.probe=patch('digital_human.media.probe',return_value={'format':{'duration':'18.5'},'streams':[{'codec_type':'audio'}]})
         self.probe.start();self.addCleanup(self.probe.stop)
 
-    def voice(self):cloud.speech(self.job,FakeVoice())
+    def voice(self):
+        cloud.speech(self.job,FakeVoice());ready_avatar(self.job)
 
     def test_paid_voice_called_once(self):
         p=FakeVoice();cloud.speech(self.job,p);cloud.speech(self.job,p)
@@ -75,6 +77,7 @@ class CloudTests(unittest.TestCase):
     def test_mcp_crash_after_reservation_requires_reconciliation(self):
         configure(self.w,{'heygen':{'transport':'mcp'}})
         job=self.w.prepare('另一个测试。');cloud.speech(job,FakeVoice())
+        ready_avatar(job)
         cloud.record_remote(job,asset_id='example_asset')
         result=cloud.mcp_begin(job);self.assertEqual(result['arguments']['audioAssetId'],'example_asset')
         self.assertNotIn('script',result['arguments'])

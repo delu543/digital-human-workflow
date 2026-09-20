@@ -4,6 +4,27 @@ from ..config import credential
 from ..network import Client
 from ..storage import WorkflowError
 
+def avatar_payload(profile, audio_asset_id, job_id, mcp=False):
+    h, f = profile['heygen'], profile['format']
+    if not h['avatar_id']:
+        raise WorkflowError('尚未绑定用户已创建的数字人 look ID')
+    engine = {'type': h['engine']}
+    if h.get('reference_look_id'):
+        if h['engine'] != 'avatar_v':
+            raise WorkflowError('动作参考仅适用于 Avatar V')
+        engine['reference_look_id'] = h['reference_look_id']
+    value = {'type': 'avatar', 'avatar_id': h['avatar_id'], 'audio_asset_id': audio_asset_id,
+        'engine': engine, 'aspect_ratio': '9:16' if f['height'] > f['width'] else ('16:9' if f['width'] > f['height'] else '1:1'),
+        'resolution': h['resolution'], 'output_format': 'mp4', 'fit': 'contain',
+        'title': 'Digital Human ' + job_id, 'callback_id': job_id}
+    if h.get('motion_prompt'):
+        value['motion_prompt'] = h['motion_prompt']
+    if mcp:
+        names = {'avatar_id': 'avatarId', 'audio_asset_id': 'audioAssetId', 'aspect_ratio': 'aspectRatio',
+                 'output_format': 'outputFormat', 'callback_id': 'callbackId', 'motion_prompt': 'motionPrompt'}
+        return {names.get(k, k): v for k, v in value.items() if k != 'type'}
+    return value
+
 class HeyGen:
     def __init__(self, workspace, profile, client=None):
         self.profile = profile
@@ -18,6 +39,9 @@ class HeyGen:
     def looks(self):
         return self.client.call('GET','/v3/avatars/looks')
 
+    def look(self, look_id):
+        return self.client.call('GET','/v3/avatars/looks/'+quote(look_id,safe=''))
+
     def upload(self, path):
         if path.stat().st_size > 32*1024*1024:
             raise WorkflowError('配音超过 HeyGen 32MB 上传上限，请使用压缩 MP3')
@@ -30,14 +54,7 @@ class HeyGen:
         return asset_id
 
     def payload(self, audio_asset_id, job_id):
-        h = self.profile['heygen']; f = self.profile['format']
-        if not h['avatar_id']:
-            raise WorkflowError('尚未绑定用户已创建的数字人 look ID')
-        ratio = '9:16' if f['height'] > f['width'] else ('16:9' if f['width'] > f['height'] else '1:1')
-        return {'type':'avatar','avatar_id':h['avatar_id'],'audio_asset_id':audio_asset_id,
-            'engine':{'type':h['engine']},'aspect_ratio':ratio,'resolution':h['resolution'],
-            'output_format':'mp4','fit':'contain','title':'Digital Human '+job_id,
-            'callback_id':job_id}
+        return avatar_payload(self.profile, audio_asset_id, job_id)
 
     def create(self, payload):
         return self.client.call('POST','/v3/videos',payload)
