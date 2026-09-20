@@ -126,7 +126,8 @@ class Workspace:
             write(path / 'sources.json', [])
             write(path / 'job.json', {'schema_version': 1, 'quality_version': 1, 'id': job_id, 'created_at': now(),
                 'fingerprint': key, 'script_sha256': file_hash(path / 'script.txt'),
-                'profile_sha256': file_hash(path / 'profile.json'), 'stage': 'prepared',
+                'profile_sha256': file_hash(path / 'profile.json'),
+                'model_requirements_sha256': digest(brief.get('model_requirements')), 'stage': 'prepared',
                 'operations': {}, 'artifacts': {}, 'remote': {}})
             return Job(path, self)
 
@@ -136,6 +137,10 @@ class Job:
 
     def load(self):
         value = read(self.path / 'job.json')
+        if 'model_requirements_sha256' in value:
+            requirements = read(self.path / 'brief.json').get('model_requirements')
+            if digest(requirements) != value['model_requirements_sha256']:
+                raise WorkflowError('模型要求已修改；请建立新任务版本，不能降低原任务的模型要求')
         for name in ['script', 'profile']:
             filename = 'script.txt' if name == 'script' else 'profile.json'
             if file_hash(self.path / filename) != value[name + '_sha256']:

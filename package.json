@@ -1,6 +1,6 @@
 {
   "name": "digital-human-workflow",
-  "version": "0.3.0",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
   "engines": {

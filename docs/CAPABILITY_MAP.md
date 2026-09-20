@@ -12,8 +12,9 @@
 | 恢复与重复收费保护 | storage.py、budget.py、cloud.py | 超时/中断/撤销授权单测 |
 | 源素材检查 | media.inspect_source、本地 evidence | 元数据、连续片段；不自动判断眼部或光线质量 |
 | 生成前质量计划 | quality.py、quality-plan.json | 静态形象、姿势/机位、引擎能力；缺失时上传前阻止 |
+| 用户指定模型约束 | brief.model_requirements、storage.py、quality.py | 任务绑定要求；MiniMax/HeyGen 实际付费参数不符时阻止，旧任务恢复兼容 |
 | 本次配音验收 | quality.py、voice-review.json | 绑定最终音频哈希；转写不能代替试听 |
-| 真人感模板复用 | 私人工作区 baselines/ | 用户真实认可；声像/动作变化使模板失效 |
+| 真人感模板复用与撤销 | 私人工作区 baselines/、revoke-baseline | 用户真实认可；声像/动作变化或明确否定使模板停止复用；保留源证据与已付费恢复 |
 | 参数与提示词分层 | providers、references/prompts.md | API/MCP同一参数源，V不传expressiveness |
 | 字幕 | alignment.py | 实际 token 时间、原稿一致 |
 | 分镜/图片/动画 | Skill、composition.py、sources.json | 意义吻合、权利可用、脸部安全 |

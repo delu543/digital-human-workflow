@@ -6,7 +6,7 @@ Codex 负责理解文案、分镜与执行，MiniMax 负责用户自己的声音
 
 这是可安装的通用工作流与 Codex Skill，不包含作者账号、录音、私人文案、形象、密钥或个人配置。每位用户在自己的电脑保存自己的素材与账户设置。
 
-代码版本 **v0.3.0**，工作流指导 **v0.3.2**：独立剪辑时间轴、不可覆盖的修订、句段剪切/重排/同步变速、视频插片、独立字幕/标题/混音、基础镜头关键帧，以及按需生成的实验性 Mac 剪映草稿。保留此前的声音与真人感验收，默认直接出片并控制临时文件占用。详见 [更新记录](CHANGELOG.md)、[剪辑流程](skills/digital-human-workflow/references/editing.md) 与 [真人感流程](skills/digital-human-workflow/references/realism.md)。
+代码与工作流版本 **v0.3.3**：在独立剪辑、字幕/插片/混音与可选剪映基础上，增加用户指定模型的付费请求校验、被否定样片的基线撤销，以及人物/声音的分层验收。默认直接出片并控制临时文件占用；已有合格素材复用。详见 [更新记录](CHANGELOG.md)、[剪辑流程](skills/digital-human-workflow/references/editing.md) 与 [真人感流程](skills/digital-human-workflow/references/realism.md)。
 
 ## 给第一次使用的人
 

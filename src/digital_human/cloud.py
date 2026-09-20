@@ -18,9 +18,11 @@ def unwrap(result):
 def speech(job, provider=None, voice_id=None):
     if existing := job.artifact('voice'):
         return str(existing)
+    quality.require_requested_models(job)
     p = require_consent(job,['minimax'])
     api = provider or MiniMax(job.workspace,job.profile())
     payload=api.speech_payload(job.script(),voice_id)
+    quality.require_requested_models(job,payload,'minimax')
     costs=quote(p,'minimax',len(job.script().encode('utf-8')))
     op, fresh=reserve(job,'voice','minimax',payload,costs)
     receipt=job.path/'receipts/minimax-speech.json'
@@ -77,6 +79,7 @@ def submit_avatar(job, provider=None):
         current=job.load();current['remote']['audio_asset_id']=asset_id;job.save(current)
         settle(job,'avatar_upload','complete',asset_id=asset_id)
     payload=api.payload(asset_id,job.path.name)
+    quality.require_requested_models(job,payload,'heygen')
     op,fresh=reserve(job,'avatar','heygen',payload,costs)
     receipt=job.path/'receipts/heygen-create.json'
     if receipt.exists(): result=unwrap(read(receipt))
@@ -154,6 +157,7 @@ def mcp_begin(job):
             'size_bytes':voice.stat().st_size,'content_type':'audio/mpeg',
             'next':'Record the returned asset ID using record-remote, then call mcp-begin again.'}
     args=avatar_payload(job.profile(),asset,job.path.name,mcp=True)
+    quality.require_requested_models(job,args,'heygen')
     op,fresh=reserve(job,'avatar','heygen',args,costs)
     if not fresh:
         if op.get('video_id'): return {'action':'resume_existing','video_id':op['video_id']}

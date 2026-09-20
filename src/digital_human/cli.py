@@ -33,6 +33,7 @@ def parser():
     g=s.add_mutually_exclusive_group(required=True);g.add_argument('--file');g.add_argument('--reuse-baseline')
     for name in ['voice-review', 'accept-baseline']:
         s=sub.add_parser(name);s.add_argument('job');s.add_argument('--file',required=True)
+    s=sub.add_parser('revoke-baseline');s.add_argument('baseline');s.add_argument('--reason',required=True)
     s=sub.add_parser('inspect-source');s.add_argument('job');s.add_argument('--file',required=True)
     s=sub.add_parser('add-image');s.add_argument('job');s.add_argument('--file',required=True)
     s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
@@ -71,6 +72,7 @@ def execute(args):
         from .doctor import doctor
         return doctor(w,args.online)
     if args.command=='configure': return configure(w,read(args.file))
+    if args.command=='revoke-baseline': return quality.revoke_baseline(w,args.baseline,args.reason)
     if args.command=='secrets':
         if not sys.stdin.isatty(): raise WorkflowError('请在用户本地终端运行 secrets 命令；不要把密钥放入聊天或命令参数')
         return save_credential(w,args.service,getpass.getpass('API Key（输入隐藏）: ').strip())

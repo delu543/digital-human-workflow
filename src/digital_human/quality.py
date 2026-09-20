@@ -11,6 +11,32 @@ def evidence(value, name):
         raise WorkflowError('请记录实际检查依据：' + name)
 
 
+def require_requested_models(job, payload=None, provider=None):
+    """Bind explicit user-selected models to both the profile and outgoing request."""
+    profile = job.profile()  # Also verifies the immutable model requirement digest.
+    requested = read(job.path / 'brief.json').get('model_requirements')
+    if requested is None:
+        return
+    fields = {'heygen_engine': profile['heygen']['engine'],
+              'minimax_model': profile['minimax']['model']}
+    if not isinstance(requested, dict) or set(requested) - set(fields):
+        raise WorkflowError('model_requirements 仅支持 heygen_engine 与 minimax_model')
+    for key, wanted in requested.items():
+        if not isinstance(wanted, str) or not wanted.strip() or fields[key] != wanted:
+            raise WorkflowError('实际配置不符合用户指定模型：' + key + '；不得静默降级')
+    if payload is not None:
+        if provider == 'minimax' and 'minimax_model' in requested:
+            actual, wanted = payload.get('model'), requested['minimax_model']
+        elif provider == 'heygen' and 'heygen_engine' in requested:
+            engine = payload.get('engine')
+            actual = engine.get('type') if isinstance(engine, dict) else None
+            wanted = requested['heygen_engine']
+        else:
+            return
+        if actual != wanted:
+            raise WorkflowError('待发送请求的模型与用户要求不符；已阻止付费提交')
+
+
 def signature(profile):
     """Ignore billing, script length and graphics; bind every presenter setting."""
     h, m, f = profile['heygen'], profile['minimax'], profile['format']
@@ -20,9 +46,26 @@ def signature(profile):
         'frame': [f['width'], f['height']]})
 
 
+def revoke_baseline(workspace, baseline_id, reason):
+    """Preserve approval evidence but prevent future use after contrary feedback."""
+    if not isinstance(baseline_id, str) or not re.fullmatch(r'[a-f0-9]{24}', baseline_id):
+        raise WorkflowError('缺少有效的真人感基线 ID')
+    evidence(reason, '基线停止复用的反馈或检查依据')
+    source = workspace.path / 'baselines' / (baseline_id + '.json')
+    if not source.exists() or digest(read(source))[:24] != baseline_id:
+        raise WorkflowError('原基线不存在或已变化；先核对历史证据，不删除或重写')
+    target = workspace.path / 'baselines' / 'revoked' / (baseline_id + '.json')
+    if target.exists():
+        return {'baseline_id': baseline_id, 'revoked': True, 'already_recorded': True}
+    write(target, {'baseline_id': baseline_id, 'reason': reason, 'revoked_at': now()})
+    return {'baseline_id': baseline_id, 'revoked': True, 'original_preserved': True}
+
+
 def baseline(job, baseline_id):
     if not isinstance(baseline_id, str) or not re.fullmatch(r'[a-f0-9]{24}', baseline_id):
         raise WorkflowError('缺少有效的已验收真人感基线')
+    if (job.workspace.path / 'baselines' / 'revoked' / (baseline_id + '.json')).exists():
+        raise WorkflowError('此真人感基线已停止复用；保留原证据，按新反馈重新校准')
     path = job.workspace.path / 'baselines' / (baseline_id + '.json')
     if not path.exists():
         raise WorkflowError('真人感基线不存在')
@@ -39,6 +82,7 @@ def baseline(job, baseline_id):
 
 
 def validate_plan(job, value, fresh_capability=True):
+    require_requested_models(job)
     if value.get('schema_version') != 1 or value.get('mode') not in ['calibration', 'production']:
         raise WorkflowError('质量计划需要 schema_version=1 与 calibration/production 模式')
     if value.get('profile_signature') != signature(job.profile()):
