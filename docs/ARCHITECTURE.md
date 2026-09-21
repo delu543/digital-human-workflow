@@ -12,8 +12,6 @@ flowchart LR
   T --> C[Codex 语义分镜和素材权利记录]
   C --> E[独立剪辑计划和统一时间轴]
   E --> F[Hyperframes 本地成片]
-  E --> N[可选 Mac 剪映多轨草稿]
-  N --> G[目标剪映 UI 编辑与验收]
   F --> Q[技术检查及视听验收]
   Q --> D[MP4 / SRT / 完整素材包]
 ```
@@ -55,6 +53,6 @@ v0.3.3 将可选的 `brief.model_requirements`（`heygen_engine`、`minimax_mode
 
 edit_timeline 将源时间 ranges 与成片时间 overlays/audio 编译为整数微秒时间轴。每段数字人和旁白共享同步组与速度；字幕从原声学 cue 映射，不能估算或独立漂移。editing 创建 jobs/<id>/edits/<revision>/ 的完整独立快照，原 job 的云端操作不变。
 
-edit_hyperframes 和 edit_jianying 消费同一时间轴。后者只调用所保留的 MIT 纯 serializer，在任务 exports 内写全新工程，不修改剪映首页、启动程序或调用内部动态库。跨机器用 portable-plan 重建绝对路径；若原生文件已被手改则拒绝从旧计划覆盖。复杂 HTML 的 edit-seal 标记会阻止不一致的原生导出。
+edit_hyperframes 消费统一时间轴，创建独立本地工程。复杂 HTML 可用 edit-seal 冻结，修改已渲染结果需新修订。v0.5 移出了不被当前本地导出依赖的原生编辑器适配与第三方序列化代码。
 
-旧 composition 和 run --storyboard 仍可用。新 brief 的 postproduction.mode=independent 使 runner 在干净素材与字幕就绪后返回 needs_edit_plan，由 Codex 执行后续命令。工具选择由交付和用户要求决定，不固定剪映依赖。单纯增加后期层不能修复源人物的身份、眼神或口型缺陷。
+旧 composition 和 run --storyboard 仍可用。新 brief 的 postproduction.mode=independent 使 runner 在干净素材与字幕就绪后返回 needs_edit_plan，由 Codex 执行后续命令。字幕、图解和本地渲染保持独立于人物生成。单纯增加后期层不能修复源人物的身份、眼神或口型缺陷。

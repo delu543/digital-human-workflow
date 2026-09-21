@@ -80,19 +80,15 @@ def build(job, plan, name):
     write(target/'edit-plan.json',plan);write(target/'timeline.json',timeline)
     write(target/'edit-lineage.json',{'parent_job':job.path.name,'parent_avatar_sha256':file_hash(avatar),
         'parent_captions_sha256':file_hash(captions),'source_script_unchanged':True,'cloud_calls':0})
-    write(target/'brief.json',{**read(job.path/'brief.json'),'postproduction':'fully digital; editor optional'})
+    write(target/'brief.json',{**read(job.path/'brief.json'),'postproduction':{'mode':'independent'}})
     write(target/'storyboard.json',{'kind':'compiled-edit-plan','plan':'edit-plan.json'})
     write(target/'captions.json',{'duration':timeline['duration'],'source':'mapped-parent-acoustic-cues','captions':timeline['captions']})
     write(target/'sources.json',[{'path':v['path'],'source':v['source'],'rights':v['rights']} for v in timeline['assets'].values()])
     (target/'subtitles.srt').write_text(srt(timeline['captions']),encoding='utf-8')
     child.record('edit_plan','edit-plan.json');child.record('edit_timeline','timeline.json');child.record('captions','captions.json')
     return {'revision':name,'path':str(target),'duration':timeline['duration'],'clips':len(timeline['clips']),
-            'cloud_calls':0,'next':'edit-compose then edit-render, or edit-export for optional Jianying draft'}
+            'cloud_calls':0,'next':'edit-compose, edit-render, edit-verify, then review and deliver'}
 
 def compose(child):
     from .edit_hyperframes import compose as render_project
     return render_project(child)
-
-def export(child):
-    from .edit_jianying import export as native_export
-    return native_export(child)

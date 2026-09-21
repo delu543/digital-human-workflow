@@ -1,6 +1,10 @@
 # 功能与验收责任
 
-本仓库为独立通用实现，不修改或迁移作者原私有工程；没有删除原功能或上传原用户数据。
+本仓库为独立通用实现；功能移除按当前用户要求明确记录，不修改或迁移私有工程。
+
+## v0.5 有意移除
+
+Removed / Changed Existing Capabilities：移除剪映专用集成、原生草稿导出/重定位命令、第三方序列化模块及相关文档。保留独立剪切、时间映射、字幕、画中画、插片、混音和 MP4 导出。旧用户工程与已交付文件不删除，新素材包不自动附带旧编辑器扩展。
 
 | 能力 | 实现/状态真源 | 验收要求 |
 |---|---|---|
@@ -34,12 +38,10 @@ v0.2 未移除 API、会员 MCP、导入、克隆、字幕、动画、渲染或�
 | 视频/图片插片与分轨混音 | active | add-media + overlays/audio；来源和哈希登记 |
 | 位置、缩放、旋转、透明度关键帧 | active | editor-independent timeline + Hyperframes；线性曲线 |
 | 干净人物与独立字幕 | active | avatar 专用生成路径 + alignment；不要求 HeyGen 包装 |
-| 原生剪映草稿和重定位 | experimental | 两个 MIT 纯序列化模块；目标 Mac 版本/UI 未由本版验证 |
 | 原有 storyboard/自定义 HTML | active | 原路径保留；自定义 HTML 不伪装成可通用无损导出 |
 | 新供应商视频生成 API | 未内置 | Codex 用已授权工具准备本地结果，再登记插片 |
-| 原生无界面导出/任意加密草稿编辑 | 未采用 | 不复制受限参考实现，不宣称所有参考仓库功能已移植 |
 
-Removed / Changed Existing Capabilities：无功能移除。新片可选 independent 后期分支；旧任务继续原分支，无隐式迁移。剪映是可选后端，缺少它不阻断本地 MP4 路径。
+新片采用 independent 后期分支；旧任务继续原分支，无隐式迁移。
 
 ## v0.4 新增与边界
 
@@ -55,4 +57,4 @@ Removed / Changed Existing Capabilities：无功能移除。新片可选 indepen
 | 渲染兼容适配 | hf-compat.mjs，Hyperframes 0.8.48 | 内存适配竖屏捕获和审计采样；版本不符停止，Node ≥22.15 |
 | 进程停止 | processes.py / psutil | 跟踪本任务子进程包括独立会话；不按名称关闭其他浏览器，不是系统沙箱 |
 
-原 API/MCP/import、声音克隆、预算/不确定请求保护、字幕、storyboard、独立剪辑、实验性剪映草稿与 ZIP 均保留。默认素材目录、ZIP 按需是工作流选择，未移除打包命令。无私人配置迁移；不得把个人已验收的长片推广成所有用户/平台均已验证。
+原 API/MCP/import、声音克隆、预算/不确定请求保护、字幕、storyboard、独立剪辑与 ZIP 均保留。默认素材目录、ZIP 按需是工作流选择，未移除打包命令。无私人配置迁移；不得把个人已验收的长片推广成所有用户/平台均已验证。

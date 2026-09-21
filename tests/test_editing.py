@@ -1,14 +1,11 @@
 from copy import deepcopy
-import json
 from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
 from digital_human import editing
 from digital_human.edit_timeline import compile_plan, SCHEMA
-from digital_human.edit_jianying import native_plan, export, relink
-from digital_human.storage import Workspace, WorkflowError, file_hash, read, write
-from digital_human.vendor.jianying.native import build_native
+from digital_human.storage import Workspace, WorkflowError, file_hash, write
 
 FMT={'width':1080,'height':1920,'fps':25}
 CUES=[{'start':.2,'end':1.8,'text':'第一句。'},{'start':2.2,'end':3.8,'text':'第二句。'}]
@@ -61,24 +58,6 @@ class TimelineTests(unittest.TestCase):
         for style in [{'scale':float('nan')},{'keyframes':{'scale':[{'time':1,'value':1},{'time':2,'value':2}]}}]:
             with self.assertRaises(WorkflowError):self.compile(presenter=style)
 
-    def test_native_draft_has_separate_tracks_editable_chinese_and_keyframes(self):
-        t=self.compile(presenter={'keyframes':{'scale':[{'time':0,'value':1},{'time':4,'value':1.05}]}},
-                       audio=[{'asset':'music','start':0,'duration':4,'volume':.1,'fade_in':.5,'fade_out':.5}])
-        plan=native_plan(t,'fixture')
-        with tempfile.TemporaryDirectory() as d:
-            for c in plan['clips']:
-                if 'path' in c:c['path']=str(Path(d)/c['path'])
-            files=build_native(plan,Path(d))
-        info=files['draft_info.json']
-        self.assertEqual({t['type'] for t in info['tracks']},{'audio','text','video'})
-        text=''.join(json.loads(t['content'])['text'] for t in info['materials']['texts'])
-        self.assertEqual(text,'第一句。第二句。')
-        self.assertTrue(info['tracks'][0]['segments'][0]['common_keyframes'])
-        self.assertEqual(info['duration'],4_000_000)
-
-    def test_native_unsupported_mask_fails_without_flattening(self):
-        with self.assertRaises(WorkflowError):native_plan(self.compile(presenter={'mask':'circle'}),'fixture')
-
 class RevisionTests(unittest.TestCase):
     def setUp(self):
         t=tempfile.TemporaryDirectory();self.addCleanup(t.cleanup)
@@ -107,20 +86,6 @@ class RevisionTests(unittest.TestCase):
         self.build();child=editing.revision(self.job,'v1')
         child.artifact('avatar').write_bytes(b'changed')
         with self.assertRaises(WorkflowError):editing.revision(self.job,'v1')
-
-    def test_native_export_and_relocation_preserve_all_layers(self):
-        self.build();child=editing.revision(self.job,'v1');result=export(child)
-        source=Path(result['directory']);target=child.path/'exports/relocated'
-        relink(source,target)
-        a=read(source/'draft_info.json');b=read(target/'draft_info.json')
-        self.assertEqual(a['duration'],b['duration']);self.assertEqual(len(a['tracks']),len(b['tracks']))
-        self.assertTrue(all(str(target) in v['path'] for v in b['materials']['videos']))
-        self.assertFalse(read(target/'draft-manifest.json')['native_app_verified'])
-
-    def test_relocation_refuses_manually_changed_draft(self):
-        self.build();child=editing.revision(self.job,'v1');source=Path(export(child)['directory'])
-        (source/'draft_info.json').write_text('{}')
-        with self.assertRaises(WorkflowError):relink(source,child.path/'exports/another')
 
     def test_hyperframes_keeps_video_muted_and_captions_outside_source(self):
         self.build();child=editing.revision(self.job,'v1')

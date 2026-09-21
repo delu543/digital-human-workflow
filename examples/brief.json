@@ -2,7 +2,6 @@
   "purpose": "production",
   "visual_request": "全数字人竖屏，字幕清晰；独立后期添加语义插片与克制的镜头运动，不遮挡面部。",
   "postproduction": {
-    "mode": "independent",
-    "editor": "auto"
+    "mode": "independent"
   }
 }

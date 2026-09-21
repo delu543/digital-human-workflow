@@ -1,6 +1,6 @@
 interface:
   display_name: "数字人工作流"
-  short_description: "从授权声像与文案出片：自然数字人、实拍检索、字幕动效与可选剪映"
-  default_prompt: "使用 $digital-human-workflow，按我的文案和剪辑要求制作全数字人成片；由你完成真实素材检索、出镜规划、字幕动效与验收；默认直接导出，剪映按需，保留必要素材并控制费用。首次使用先引导必要配置。"
+  short_description: "从授权声像与文案出片：自然数字人、实拍检索、独立剪辑与字幕动效"
+  default_prompt: "使用 $digital-human-workflow，按我的文案和剪辑要求制作全数字人成片；由你完成真实素材检索、出镜规划、字幕动效与验收；直接导出，保留必要素材并控制费用。首次使用先引导必要配置。"
 policy:
   allow_implicit_invocation: true

@@ -37,11 +37,10 @@ def main():
     write(job.path/'requested-edit.json',plan);editing.build(job,plan,'v1')
     child=editing.revision(job,'v1');editing.compose(child)
     print('Built local timeline and Hyperframes project',flush=True)
-    native=editing.export(child);print('Native draft structure generated; application NOT verified',flush=True)
     checks=media.hf(child,'check');print('Check '+str(checks['ok']),flush=True)
     media.hf(child,'render',timeout=3600);result=delivery.verify(child)
-    report={'job_id':job.path.name,'revision':'v1','technical':result,'native_draft':native,
-            'cloud_calls':0,'identity_or_naturalness_tested':False,'native_app_verified':False}
+    report={'job_id':job.path.name,'revision':'v1','technical':result,
+            'cloud_calls':0,'identity_or_naturalness_tested':False}
     write(workspace.path/'last-result.json',report)
     print(str(child.artifact('render')),flush=True)
 

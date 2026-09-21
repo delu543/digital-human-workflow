@@ -42,10 +42,9 @@ def parser():
     s.add_argument('--kind',choices=['video','image','audio'],required=True)
     s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
     s=sub.add_parser('edit-build');s.add_argument('job');s.add_argument('--plan',required=True);s.add_argument('--name',required=True)
-    for name in ['edit-status','edit-compose','edit-render','edit-export','edit-verify','edit-review','edit-bundle','edit-seal']:
+    for name in ['edit-status','edit-compose','edit-render','edit-verify','edit-review','edit-bundle','edit-seal']:
         s=sub.add_parser(name);s.add_argument('job');s.add_argument('revision')
         if name=='edit-review':s.add_argument('--file',required=True)
-    s=sub.add_parser('relink-draft');s.add_argument('--source',required=True);s.add_argument('--out',required=True)
     return p
 
 def add_image(job,args):
@@ -80,9 +79,6 @@ def execute(args):
     if args.command=='prepare':
         job=w.prepare(Path(args.script).read_text(encoding='utf-8'),read(args.brief) if args.brief else {},args.new)
         return {'job_id':job.path.name,'path':str(job.path),'state':job.load()['stage']}
-    if args.command=='relink-draft':
-        from .edit_jianying import relink
-        return relink(args.source,args.out)
     job=w.job(args.job)
     with job.locked():
         return execute_job(job,args)
@@ -104,13 +100,11 @@ def execute_job(job,args):
         child=editing.revision(job,args.revision)
         if c=='edit-status':return child.load()
         if c=='edit-compose':return editing.compose(child)
-        if c=='edit-export':return editing.export(child)
         if c=='edit-seal':
-            if child.artifact('render') or child.artifact('jianying_draft'):
-                raise WorkflowError('此修订已渲染或导出原生工程；请另建修订，不覆盖或制造不一致交付')
+            if child.artifact('render'):
+                raise WorkflowError('此修订已渲染；请另建修订，不覆盖已有交付')
             child.record('composition','project/index.html')
-            state=child.load();state['custom_hyperframes']=True;child.save(state)
-            return {'saved':True,'native_export_available':False,'reason':'Custom HTML has no automatic native timeline mapping.'}
+            return {'saved':True,'project':'project/index.html','backend':'hyperframes'}
         if c=='edit-render':
             if not child.artifact('composition'):editing.compose(child)
             if existing:=child.artifact('render'):return str(existing)

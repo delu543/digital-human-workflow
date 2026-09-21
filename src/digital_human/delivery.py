@@ -112,14 +112,6 @@ def bundle(job):
             if path.name in ['profile.json','secrets.json'] or any(x.startswith('.') for x in rel.parts):
                 raise WorkflowError('工程包含私人配置或隐藏文件，不能打包')
             paths.add(str(rel))
-    if draft:=job.artifact('jianying_draft'):
-        report=read(draft);root=draft.parent
-        paths.add(str(draft.relative_to(job.path)))
-        for item in report['files']:
-            p=within(root,item['path'])
-            if p.suffix.lower() not in allowed or file_hash(p)!=item['sha256']:
-                raise WorkflowError('剪映交接文件变化或格式无效；不能包装旧计划覆盖手工修改')
-            paths.add(str(p.relative_to(job.path)))
     manifest=[]
     for rel in sorted(paths):
         p=within(job.path,rel)
