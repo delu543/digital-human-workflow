@@ -34,7 +34,7 @@ class ExportWorkerTests(unittest.TestCase):
             with patch('digital_human.export_worker.command') as command:
                 with self.assertRaises(WorkflowError):execute(spec)
                 command.assert_not_called()
-            self.assertEqual(json.loads((root/'state/status.json').read_text())['stage'],'failed')
+            self.assertEqual(json.loads((root/'state/status.json').read_text(encoding='utf-8'))['stage'],'failed')
 
     @patch('digital_human.export_worker.shutil.which', return_value='/node')
     def test_outputs_cannot_contaminate_project_or_overwrite(self, _):
