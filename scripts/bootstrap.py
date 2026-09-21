@@ -17,9 +17,9 @@ def main():
     args=parser.parse_args()
     if sys.version_info < (3,11): raise SystemExit('需要 Python 3.11+；请安装后再运行')
     node=shutil.which('node'); npm=shutil.which('npm.cmd' if os.name=='nt' else 'npm')
-    if not node or not npm: raise SystemExit('需要 Node.js 22+（包含 npm）：https://nodejs.org/')
+    if not node or not npm: raise SystemExit('需要 Node.js 22.15+（包含 npm）：https://nodejs.org/')
     version=subprocess.check_output([node,'--version'],text=True).strip()
-    if int(version.lstrip('v').split('.')[0])<22: raise SystemExit('Node.js 版本须为22或以上')
+    if tuple(map(int,version.lstrip('v').split('.')[:2]))<(22,15): raise SystemExit('Node.js 版本须为22.15或以上')
     runtime=ROOT/'.runtime';runtime.mkdir(exist_ok=True)
     env={**os.environ,'DO_NOT_TRACK':'1','HYPERFRAMES_NO_TELEMETRY':'1'}
     env.pop('MINIMAX_API_KEY',None);env.pop('HEYGEN_API_KEY',None)

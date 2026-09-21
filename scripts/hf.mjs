@@ -6,6 +6,7 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const env={...process.env,DO_NOT_TRACK:'1',HYPERFRAMES_NO_TELEMETRY:'1'};
 delete env.MINIMAX_API_KEY;
 delete env.HEYGEN_API_KEY;
+delete env.PEXELS_API_KEY;
 // Reuse an installed Chrome when available; avoid an unnecessary large first-render download.
 if (!env.HYPERFRAMES_BROWSER_PATH) {
   const candidates=process.platform==='darwin'
@@ -17,6 +18,6 @@ if (!env.HYPERFRAMES_BROWSER_PATH) {
   if (browser) env.HYPERFRAMES_BROWSER_PATH=browser;
 }
 env.PATH=[path.join(root,'.runtime','bin'),env.PATH].join(path.delimiter);
-const child=spawn(process.execPath,[path.join(root,'node_modules','hyperframes','bin','hyperframes.mjs'),...process.argv.slice(2)],{env,stdio:'inherit'});
+const child=spawn(process.execPath,['--import',path.join(root,'scripts/hf-compat.mjs'),path.join(root,'node_modules','hyperframes','bin','hyperframes.mjs'),...process.argv.slice(2)],{env,stdio:'inherit'});
 child.on('error',()=>{console.error('本地 Hyperframes 不可用，请运行 bootstrap.py');process.exitCode=1;});
 child.on('exit',code=>{process.exitCode=code??1;});

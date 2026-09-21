@@ -35,6 +35,7 @@ def parser():
         s=sub.add_parser(name);s.add_argument('job');s.add_argument('--file',required=True)
     s=sub.add_parser('revoke-baseline');s.add_argument('baseline');s.add_argument('--reason',required=True)
     s=sub.add_parser('inspect-source');s.add_argument('job');s.add_argument('--file',required=True)
+    s=sub.add_parser('record-export');s.add_argument('job');s.add_argument('--state',required=True);s.add_argument('--revision')
     s=sub.add_parser('add-image');s.add_argument('job');s.add_argument('--file',required=True)
     s.add_argument('--source',required=True);s.add_argument('--rights',required=True)
     s=sub.add_parser('add-media');s.add_argument('job');s.add_argument('--file',required=True)
@@ -88,6 +89,10 @@ def execute(args):
 
 def execute_job(job,args):
     c=args.command
+    if c=='record-export':
+        from .export_worker import register
+        from .editing import revision
+        return register(revision(job,args.revision) if args.revision else job,args.state)
     if c=='add-media':
         from .editing import add_asset
         return add_asset(job,args.file,args.kind,args.source,args.rights)

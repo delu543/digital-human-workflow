@@ -9,6 +9,7 @@
 | whisper.cpp | [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp), v1.9.4 | 本地中文 DTW 字词时间；关闭 flash attention |
 | Noto CJK | [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk) | 仓库内原始字体 SHA-256 为 `2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b`，OFL 同目录 |
 | Requests / imageio-ffmpeg | 2.34.2 / 0.6.0 | HTTPS、便携编码器，无浏览器凭证抓取 |
+| psutil | [giampaolo/psutil](https://github.com/giampaolo/psutil)，7.2.2 / BSD-3-Clause | 独立导出器追踪和停止本任务进程树；不扫描或杀死无关浏览器 |
 | FFprobe installer | 2.1.2 | 选当前平台预编译探测工具，固定 lock |
 | Jianying Local MCP | [Capricornus-joe/jianying-local-mcp](https://github.com/Capricornus-joe/jianying-local-mcp/tree/f47f907e7bc15e68082238e50ca5964c50b2f559)，v0.3.0 / MIT | 仅内置两个原样的纯序列化模块；来源和 SHA-256 见 `src/digital_human/vendor/jianying/SOURCE.json`。不启动其 MCP 服务，不采用删除式发布/回滚管理器，无新增网络和账号依赖 |
 
@@ -28,3 +29,7 @@
 - [Codex Skills](https://developers.openai.com/zh-Hans/docs/build-skills)、[Codex MCP](https://developers.openai.com/codex/mcp)：当前安装发现与连接规则；本仓库不强绑某个 Codex 模型或另购 OpenAI API。
 
 模型、计费、套餐名称不属于固定开源依赖版本。代码固定默认模型以保留已验收输出，但允许用户配置；不要因为发布了新模型而自动更换用户音色效果。
+
+v0.4 核对日期：2026-09-21。Hyperframes 0.8.48 的两个精确位置通过 Node `registerHooks` 在内存适配，保留 Apache-2.0 来源说明；不修改分发包，不自动升级。适配范围只有 macOS 竖屏捕获保护和 appearsBy 截止时间补采样；原断言/阈值保留。psutil 用法依据 [官方进程 API](https://psutil.io/)，采用发布版本的进程身份校验和子进程枚举，减少平台自写进程管理代码。
+
+素材方法参考 [Pexels API](https://www.pexels.com/api/documentation/)、[Pexels License](https://www.pexels.com/license/) 与 [Mixkit License](https://mixkit.co/license/)；未把素材库或电影片段打包入仓库。[VideoSeek](https://github.com/6v17/VideoSeek) 仅列为大量已授权本地媒体的可选索引，AGPL-3.0，未安装/复制/集成。macOS 一次性任务依据 [Apple launchd 文档](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)，不引入常驻工作流服务。

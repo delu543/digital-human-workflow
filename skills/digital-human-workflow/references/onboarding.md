@@ -12,3 +12,5 @@ Codex 先完成仓库 `INSTALL_FOR_CODEX.md` 的本地安装和 `DH init`、`DH 
 使用 `DH configure --file <工作区内patch.json>` 设置配置；完整字段见仓库 `config/profile.example.json`。`authorization.generation`、`voice_clone`、`destinations` 和预算必须对应真实授权，不因拿到密钥自动设为允许。`destinations` 为 `minimax_international` 或 `minimax_china`，以及 `heygen`；模型/音色/路径变更后准备新任务。价格写到 `rates`，`verified_at` 使用核实日期；空值是未配置，不是免费。
 
 不要替用户购买会员；不要把样片、录音、脚本、个人配置、缓存或日志提交到代码仓库。完成后交付简短说明：下次在当前 Codex 输入文案、风格要求即可启动；MCP 中途等待由真实工具权限决定。
+
+首次只收集真正缺失的声像素材与文案；从已有视频能选出合格照片/音频时由 Codex 处理，不重复要求另拍。人物外观、说话风格和出镜方式由当前用户决定；详细制作顺序见 [director-runbook.md](director-runbook.md)。照片本身无法包含完整声音/动作信息，缺这类素材时提出具体最小补充要求。

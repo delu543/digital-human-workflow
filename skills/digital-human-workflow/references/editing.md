@@ -20,7 +20,7 @@
 3. 参考仓库 `examples/edit-plan.json`。创建计划后执行 `DH edit-build JOB --plan FILE --name v1`，生成 `jobs/JOB/edits/v1` 的独立修订。新的修改用 v2/v3，不覆盖旧版本。收费声像完全复用。
 4. 本地成片：`DH edit-render JOB v1` 会创建 Hyperframes 工程、检查并渲染；`DH edit-verify JOB v1` 全解码并抽帧。图解/复杂排版也可选原有 storyboard + Hyperframes 路径；不为剪映交付静默把效果压平成视频。
 5. 用户明确要求剪映工程时：`DH edit-export JOB v1` 创建 `exports/jianying`，含原生文字、多轨媒体和可重定位计划。它不注册剪映首页、不调用内部引擎、不自动导出 MP4，不能把返回的 `native_app_verified:false` 当成通过。
-6. 不需要剪映时跳过第 5 步，不为“以后可能要用”预先复制媒体或生成工程。保留标准素材、SRT 与时间轴即可按需导出。视听检查后，按 production.md 的真实证据要求执行 `DH edit-review JOB v1 --file REVIEW`、`DH edit-bundle JOB v1`。ZIP 含已经创建的剪映交接包（如有）。后补剪映工程应使用新修订，不能声称旧 ZIP 自动包含它。
+6. 不需要剪映时跳过第 5 步，不为“以后可能要用”预先复制媒体或生成工程。保留标准素材、SRT 与时间轴即可按需导出。视听检查后，按 production.md 的真实证据要求执行 `DH edit-review JOB v1 --file REVIEW`，默认交付已验收 MP4、SRT 与必要素材目录。仅用户需要 ZIP 时执行 `DH edit-bundle JOB v1`；ZIP 含已经创建的剪映交接包（如有）。后补剪映工程应使用新修订，不能声称旧 ZIP 自动包含它。
 
 若选用复杂 Hyperframes 设计，可在尚未渲染/导出剪映的修订内修改 `project/`，再 `DH edit-seal JOB v1`、`DH edit-render JOB v1`。seal 会标记自定义 HTML；这个修订不能再从旧时间轴导出剪映，避免两个交付的实际内容不一致。需要原生工程时在另一修订用计划表达可映射效果。
 
@@ -53,3 +53,7 @@
 换电脑后使用 `DH relink-draft --source <解包的jianying目录> --out <新目录>` 重建本地路径，原包保留。手工修改过的草稿不允许从旧计划覆盖；它成为独立版本，继续通过剪映编辑。没有自动双向同步。
 
 原生字幕能改字、时间和样式；人物/插片仍是视频像素，不能拆出其内部人物动作。字体、裁切、动效表现须看原生导出，不宣称与 Hyperframes 逐像素一致。复杂 HTML/GSAP 动画无法通用转换：选择原生可表达的设计，或经用户接受后输出独立渲染元素并标明内部不可编辑。
+
+## v0.4 补充
+
+生活实拍与图解小素材分开管理，检索与裁切按 [stock-search.md](stock-search.md)。全程圆形人物的覆盖、声源映射和字幕避让按 [presenter-coverage.md](presenter-coverage.md)，不能仅将旧人物任意片段循环。旧 mask:circle 在非正方形画布上已修为真圆；具体头部裁切需要素材检查。长片独立导出及结果登记按 [render-recovery.md](render-recovery.md)。原生剪映尚不支持已验证圆形蒙版转换，继续明确报错，不扁平化冒充可编辑。

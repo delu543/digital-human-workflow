@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { adapt } from './hf-compat.mjs';
+const original = readFileSync(new URL('../node_modules/hyperframes/dist/cli.js', import.meta.url), 'utf8');
+const patched = adapt(original, 'darwin');
+assert.notEqual(original, patched);
+assert(patched.includes('session.options.captureBeyondViewport && process.platform !== "darwin"'));
+assert(patched.includes('mergeSampleTimes(buildMotionSampleTimes2('));
+assert(adapt(original, 'linux').includes('if (session.options.captureBeyondViewport) {'));
+assert.throws(() => adapt('wrong version', 'darwin'), /source mismatch/);
+console.log('Hyperframes adapter context and platform checks passed');

@@ -1,4 +1,4 @@
-# 提示词与调用责任（v0.3）
+# 提示词与调用责任（v0.4）
 
 以下是可填充的通用模板，不是已验收结果。变量来自该用户授权素材与当次要求，全部保存在私人工作区。不要把作者本人形象或上次任务的文案复制给新人。先看真实素材，再选模板；没有合格源素材时提示词不能创造其真实动作信息。
 
@@ -12,7 +12,7 @@
 
 仅在已有授权且需要新场景时使用；先出静态图并检查，通过后才付视频费用。以实际参考的姿势与照明为准替换括号：
 
-> Use the supplied authorized reference as the identity and pose reference. Preserve the person's facial proportions, glasses, hairstyle, age, clothing, and [seated/standing] posture. Keep the camera at [observed eye level and angle]. Place the scene in [concrete ordinary room and a few plausible objects]. Match the environment light to the observed [direction and softness] on the face, with consistent contact shadows at [visible contact surface]. Keep believable room proportions, ordinary material texture, natural skin detail and restrained depth of field. The result should look like a candid frame from a real interview recorded in this room.
+> Use the supplied authorized reference as the identity and pose reference. Preserve the person's facial proportions and the user-approved [identity features, accessories, hairstyle, clothing and posture]. Only change [explicitly permitted elements]. Keep the camera at [observed eye level and angle]. Place the scene in [concrete ordinary room and a few plausible objects]. Match the environment light to the observed [direction and softness] on the face, with consistent contact shadows at [visible contact surface]. Keep believable room proportions, ordinary material texture, natural skin detail and restrained depth of field. The result should look like a candid frame from a real interview recorded in this room.
 
 专注所需改变。例如讲堂采用与原片相近的座位、桌沿和机位，背景是普通黑板/投影幕与少量真实陈设。不要同时把坐着的人改成站立、换衣、换强光、换镜头。确实需要站姿讲课时先取得匹配姿态参考，再设计该场景。
 
@@ -50,6 +50,8 @@ Avatar V 基线优先 **null / 不发送**。确有必要时只写一个具体�
 
 > [普通具体场所]，画面中有[明确人数与身份]，正在[一项简短动作]。采用[中景/近景和角度]，相机[固定/轻微移动]，光线来自[与主片相符的具体方向]。保持动作连续、日常物件比例和自然材质。画面用于说明[当句文意]，无人对着镜头说话。
 
+先按 [真实素材检索](stock-search.md) 找到能表达动作的现成实拍；用户选生成、无合适来源或独特场景才进入已授权生成工具。以下例子是镜头语义，不要求所有场景生成。
+
 例如两名孩子在住宅书桌前写作业，普通窗光、侧面中景、短而自然的读写动作。若手指/笔接触不可靠，先更换构图或镜头设计，再在剩余预算内考虑重做；不无限抽样。插片是示意，不当作特定真人事件的现场证据。可先比较用户提供素材与授权实拍素材，不强制每个插片都生成。
 
 ## 提交前快速自查
@@ -59,3 +61,7 @@ Avatar V 基线优先 **null / 不发送**。确有必要时只写一个具体�
 - 所选模型/字段/价格在当前账户核对过吗？实际配音已确认了吗？
 - 静态图不通过，是否却准备继续付视频费？
 - 验收证据来自真实视听还是“模型高端/文件高清”的推断？
+
+## G. 生成前的整片导演提示（给 Codex）
+
+> 先把最新用户要求和附件拆成必需/可选项目，绑定实际台词、素材和验收点。沿用该用户已经接受的身份、声音与表演组合。把人物出镜策略、实际音频覆盖、每镜头动作检索词、裁切保护对象、字幕安全区和信息揭示时刻落实成私人计划。身份/声音不通过不靠特效遮掩；只改后期不重付费。候选搜索和生成有界，先做代表段，再冻结工程导出与实际验收。用户只处理不可代办的账户同意、重大选择和首次声像认可。

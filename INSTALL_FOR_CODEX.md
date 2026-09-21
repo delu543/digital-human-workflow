@@ -1,11 +1,11 @@
 # Codex 安装与运行入口
 
-目标：让新用户在自己的 Codex 提交文案与视觉要求，得到自己的数字人成片和素材包。读完本文件再读 `skills/digital-human-workflow/SKILL.md`。用户请求安装是安装授权，不是购买会员、生成付费媒体或发布个人视频的授权。
+目标：让新用户在自己的 Codex 提供本人的照片/视频和文案，必要配置完成后直接得到数字人成片。读完本文件再读 `skills/digital-human-workflow/SKILL.md` 与 [监制执行规范](skills/digital-human-workflow/references/director-runbook.md)。用户请求安装是安装授权，不是购买会员、生成付费媒体或发布个人视频的授权。
 
 ## 1. 建立独立环境
 
 - 检查已有安装与用户工作区，复用正确版本；不要把此仓库覆盖到其他项目。首次 clone 到用户选择的独立目录。
-- 检查 Python≥3.11、Node≥22、Git。若缺少系统依赖，说明官方安装入口与具体需要；不要要求用户执行不明下载脚本。macOS 编译 whisper.cpp 需要 Command Line Tools；Linux 需要 C++ 编译器；Windows 建议 WSL2。
+- 检查 Python≥3.11、Node≥22.15、Git。若缺少系统依赖，说明官方安装入口与具体需要；不要要求用户执行不明下载脚本。macOS 编译 whisper.cpp 需要 Command Line Tools；Linux 需要 C++ 编译器；Windows 建议 WSL2。
 - 在仓库执行 `python3 scripts/bootstrap.py`：创建 `.venv`、固定 Node 依赖及本地 FFmpeg/FFprobe。安装日志在 `.runtime/`。没有读取密钥、创建声像或修改其他仓库的步骤。
 - `.venv/bin/python scripts/setup_whisper.py` 下载校验过的 whisper.cpp v1.9.4 与 base 多语言模型，编译本地 DTW 对齐。首次大文件下载/编译可能数分钟；保存进度，不重复下载已通过哈希校验的文件。
 - `.venv/bin/python scripts/install_skill.py` 安装到 `~/.agents/skills/digital-human-workflow`。已有不同安装会停止，不覆盖。Windows 用 `--copy`；用户可指定 `--destination`。若当前 Codex 尚未刷新 Skill 列表，可直接阅读仓库 SKILL.md 继续，不必重装。
@@ -27,6 +27,8 @@
 
 按 Skill 的 [初始化清单](skills/digital-human-workflow/references/onboarding.md) 执行。先查已有配置，只问缺失项。计费路径、密钥所属区域、授权目的地与预算由用户决定。用户自行完成登录/验证码、密钥隐藏输入、本人形象创建与平台同意、短样片试听认可。Codex 负责其余准备和编排。
 
+一次性汇总这些外部条件；之后用户只需提供文案与不同于默认的要求。不要让用户选择内部文件名、填验收 JSON 或亲自搜每段素材。已获同范围授权不因跨阶段重复询问。外观约束从当前用户素材和意愿提取，不继承作者的配饰、穿搭、背景、人物性别或题材。
+
 官方 HeyGen MCP 地址是 `https://mcp.heygen.com/mcp/v1/`；已有连接优先复用。平台/OAuth 的权限以实际工具返回为准。本仓库不用未知第三方中转，不需要额外 OpenAI API key，不打包作者的 MCP 令牌。
 
 配置从 `config/profile.example.json` 开始，用工作区内的 JSON patch 调用 `DH configure --file <patch>`。`null` 的声像 ID、价格、计费路径都要通过实际账户确认；不能填作者 ID 或猜测值。本人形象至少先建好，不能靠本仓库规避平台验证。
@@ -38,11 +40,20 @@
 - `prepare` 固定原稿/配置；`quality-plan` 检查静态形象和动作匹配，`voice-review` 验收实际配音，`accept-baseline` 保存用户认可模板；`run` 执行到下一个真实依赖。这些记录由 Codex 写，不让用户填表。
 - MCP 需要 Codex 调用实际连接工具，CLI 不伪造 OAuth 请求。若连接工具禁止自动轮询，保存 ID、按工具要求显示视频；允许时才恢复下载和包装。向希望完全无人值守的用户说明这个限制与 API 可选方案，不替其购买或切换。
 - 不确定的收费结果先查原记录；字幕/动画问题只修本地，不重新生成昂贵声像。
-- 输出文件必须真正存在、通过技术与视听检查。交付成片、SRT、完整 ZIP；不给仅含脚本或待执行命令的“完成”。
+- 输出文件必须真正存在、通过技术与视听检查。交付成片、SRT 和必要素材目录；ZIP/剪映工程按需生成，避免重复占用。不给仅含脚本或待执行命令的“完成”。
 
 v0.3 新片默认使用独立后期，按 [editing.md](skills/digital-human-workflow/references/editing.md) 编写 brief 与剪辑计划。HeyGen 只生成干净人物；字幕、视频插片和混音由本地后期完成。默认直接出片；仅当用户明确选择剪映自动剪辑时操作剪映，只索取工程时按需导出草稿。否则无需安装剪映，也不预生成重复工程。原生交付复用了随仓库保留 MIT 许可的纯序列化模块，不需要再安装整个 MCP 服务。目标 Mac 剪映的实际兼容性必须另做短工程验收，不能由安装成功推断。
 
 `edit-build` 在原 job 下创建独立修订，不改变旧收费状态。`edit-render` 本地出片；`edit-export` 生成可选原生草稿；`relink-draft` 在全新目录重建路径。跨机器交付时由 Codex 处理本地重定位和目标编辑器 UI 检查，用户不需要编辑内部 JSON。保留源素材、手改版本和必要恢复证据；失败产物与重复副本在确认无引用、无活动进程后，按用户授权和项目清理规则处理，不无限保留临时数据。
+
+## 长片的进阶编排
+
+- 根据 [真实素材搜索](skills/digital-human-workflow/references/stock-search.md) 先分解可见动作，再搜站点、预览候选、下载正式文件、裁切和记录来源。选材失败不能用不相关库存片或静态大照片假装满足“视频插片”。
+- 按 [人物覆盖与圆框](skills/digital-human-workflow/references/presenter-coverage.md) 选择仅出镜区间生成或持续画中画。`scripts/plan_presenter.py` 只计算覆盖、缺口、句段和 sample 映射，不发起收费。Codex 用用户已批准的工具和预算逐段生成，保存对应回执并组装；不要声称基础 `DH run` 已内置多 reel 编排。
+- 长片采用 [有限后台导出](skills/digital-human-workflow/references/render-recovery.md)；完成后用 `DH record-export`（修订加 `--revision`）登记检查与渲染哈希，再走正常 `verify`/视听验收。该程序不访问云端，不自动重试。
+- 对照 [制作经验](docs/PRODUCTION-LEARNINGS.md) 检查人物动作、角色声音、字幕占位、动态节奏与真实视频语义，保留已合格部分。新的意见只能在不改变原稿观点与明确要求的前提下优化。
+
+模型、原生清晰度、单次/总时长、水印和价格按当天账户核实；选择由用户决定。能力不足时说明差距和可执行选项，不把免费方案宣传为任意长度、无水印、最高画质。
 
 ## 5. 安装验收
 

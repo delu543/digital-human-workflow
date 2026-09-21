@@ -39,7 +39,9 @@ def compose(job):
         else:
             tag='video' if clip['kind']=='video' else 'img'
             extra=' muted playsinline' if tag=='video' else ' alt=""'
-            mask='clip-path:ellipse(50% 50% at 50% 50%);' if style['mask']=='circle' else ''
+            # Percent ellipses stretch with a portrait canvas. A pixel radius
+            # keeps equal axes before the wrapper's uniform scale is applied.
+            mask=f'clip-path:circle({min(width,height)/2}px at 50% 50%);' if style['mask']=='circle' else ''
             content=f'<{tag} {attrs} class="clip picture" style="object-fit:{style["fit"]};{mask}"{extra}>'
             if tag=='video':content+='</video>'
         body.append(f'<div id="{wrapper}" class="visual" style="z-index:{clip["track"]}">{content}</div>')

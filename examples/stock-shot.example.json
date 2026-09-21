@@ -1,0 +1,18 @@
+{
+  "shot_id": "illustration-01",
+  "intent": "两名同事一起核对文档，能看到双方与纸张",
+  "queries": ["colleagues reviewing document portrait", "coworkers discussing paperwork office"],
+  "source_page": "https://example.org/authorized-stock-item",
+  "creator": "示例作者，实际使用时填写来源页作者",
+  "license_url": "https://example.org/license",
+  "license_checked_at": null,
+  "downloaded_file": null,
+  "source_sha256": null,
+  "source_in": null,
+  "source_out": null,
+  "timeline_start": null,
+  "timeline_duration": null,
+  "crop": {"subjects_to_preserve": ["双方脸部", "纸张和指向动作"], "verified_in_export": false},
+  "review": {"continuous_action_seen": false, "meaning_match": false, "rights_verified": false},
+  "status": "example_not_approved"
+}

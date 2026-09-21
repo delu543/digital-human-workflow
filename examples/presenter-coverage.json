@@ -1,0 +1,10 @@
+{
+  "duration": 30,
+  "sample_rate": 48000,
+  "mode": "continuous_pip",
+  "main_speech": [[0, 12], [16, 30]],
+  "full_screen": [[0, 5], [25, 30]],
+  "available": [[0, 5], [25, 30]],
+  "generation_units": [[0, 5], [5, 9], [9, 12], [16, 21], [21, 25], [25, 30]],
+  "max_reel_seconds": 12
+}

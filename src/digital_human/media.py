@@ -155,7 +155,8 @@ def hf(job, command, output=None, timeout=1800):
         if target.exists():
             raise WorkflowError('渲染输出已存在；核验已有结果或使用新版本文件名')
         run(args+['--quality','delivery','--fps',str(job.profile()['format']['fps']),
-                  '--workers','1','--output',str(target)],job.path/'evidence/render.log',timeout)
+                  '--workers','1','--low-memory-mode','--frames-cache-dir','off',
+                  '--output',str(target)],job.path/'evidence/render.log',timeout)
         job.record('render', str(target.relative_to(job.path)))
         write(job.path/'render-provenance.json',{'project_sha256':fingerprint,'video_sha256':file_hash(target)})
         return str(target)

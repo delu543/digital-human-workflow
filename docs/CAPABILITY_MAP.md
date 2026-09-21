@@ -40,3 +40,19 @@ v0.2 未移除 API、会员 MCP、导入、克隆、字幕、动画、渲染或�
 | 原生无界面导出/任意加密草稿编辑 | 未采用 | 不复制受限参考实现，不宣称所有参考仓库功能已移植 |
 
 Removed / Changed Existing Capabilities：无功能移除。新片可选 independent 后期分支；旧任务继续原分支，无隐式迁移。剪映是可选后端，缺少它不阻断本地 MP4 路径。
+
+## v0.4 新增与边界
+
+| 能力 | 实现/状态 | 验收和适配边界 |
+|---|---|---|
+| 最少输入与监制流程 | Skill / director-runbook | Codex 生成需求覆盖和内部计划；账号同意、首次声像认可仍需本人 |
+| 实拍视频检索 | Skill / stock-search | 有实际 Pexels 选材经验；网页/API 由 Codex 调用可用工具，未新增通用素材 API 适配器 |
+| 分段人物覆盖规划 | coverage.py / plan_presenter.py | 整数音频 sample、已覆盖扣除、完整语句装 reel；不自行生成或计费 |
+| 多 reel / 连续圆框 | Skill + 现有生成路径 + 自定义合成 | Codex 编排高级分支；并非基础 run 全自动多 reel；声音/口型映射另验收 |
+| 真圆蒙版 | edit_hyperframes.py | 以短轴计算圆半径；头部裁切仍需针对用户素材，非自动人脸跟踪 |
+| 一次性独立导出 | export_worker.py / export_project.py | 本地前台或 macOS LaunchAgent，超时和次数边界；需要支持硬链接的输出文件系统 |
+| 导出登记恢复 | record-export | 工程/视频哈希、检查报告、无覆盖写入；已有交付状态不倒退 |
+| 渲染兼容适配 | hf-compat.mjs，Hyperframes 0.8.48 | 内存适配竖屏捕获和审计采样；版本不符停止，Node ≥22.15 |
+| 进程停止 | processes.py / psutil | 跟踪本任务子进程包括独立会话；不按名称关闭其他浏览器，不是系统沙箱 |
+
+原 API/MCP/import、声音克隆、预算/不确定请求保护、字幕、storyboard、独立剪辑、实验性剪映草稿与 ZIP 均保留。默认素材目录、ZIP 按需是工作流选择，未移除打包命令。无私人配置迁移；不得把个人已验收的长片推广成所有用户/平台均已验证。
