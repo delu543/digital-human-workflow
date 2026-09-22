@@ -1,0 +1,9 @@
+{
+  "purpose": "Fictional source-pixel HEAD bounds, including hair; not author-specific coordinates",
+  "width": 1920,
+  "height": 1080,
+  "head_bounds": [[430, 80, 180, 210], [450, 90, 180, 210], [440, 85, 180, 210]],
+  "subject_fraction": 0.62,
+  "anchor_y": 0.44,
+  "output_size": 520
+}

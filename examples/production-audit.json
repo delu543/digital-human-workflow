@@ -1,0 +1,19 @@
+{
+  "schema": "production-audit/v1",
+  "purpose": "Fictional clock mapping; real plans use approved decoded-audio hashes and actual alignments",
+  "duration": 8,
+  "fps": 25,
+  "coverage_mode": "selective",
+  "utterances": [
+    {"id": "u1", "start": 1, "end": 3, "speaker": "host", "primary": "让表达更清楚", "secondary": "Make your message clear."}
+  ],
+  "captions": [
+    {"id": "c1", "utterance_id": "u1", "start": 1, "end": 3, "primary": "让表达更清楚", "secondary": "Make your message clear.", "visible": true}
+  ],
+  "audio_spans": [
+    {"id": "a1", "start": 0, "end": 8, "audio_id": "fixture-audio-hash", "speaker": "host", "source_start": 20, "rate": 1}
+  ],
+  "presenter_spans": [
+    {"id": "p1", "start": 1, "end": 3, "audio_id": "fixture-audio-hash", "speaker": "host", "source_start": 21, "rate": 1}
+  ]
+}

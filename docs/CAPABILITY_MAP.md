@@ -2,6 +2,19 @@
 
 本仓库为独立通用实现；功能移除按当前用户要求明确记录，不修改或迁移私有工程。
 
+## v0.6 新增与保留
+
+| 能力 | 实现/状态 | 验收和适配边界 |
+|---|---|---|
+| 广告导演与可选素材路线 | Skill / advertising、media-art-direction | Codex 编排；用户画幅、语言、模型、预算优先，不内置所有外部生成 API |
+| 双语字幕模板、SRT、抽查点 | caption_design.py / production_tools.py captions | 同一声学 cue；字体和背景主题可配，实际像素与阅读节奏另验 |
+| 声音/字幕/可见人物来源时钟检查 | production_audit.py / production_tools.py audit | 检查声明计划，含小窗预览；不证明 HTML 正确或口型自然，不自动放行交付 |
+| 头部稳定裁切规划 | framing.py / production_tools.py crop | 输入多姿态观察边界，输出方形裁切；非人脸检测、追踪或修脸 |
+| 品牌音乐与柔和短混剪 | Skill / sound-design、delivery-variants | 复用现有媒体，本地按实际帧裁剪与叠化；未新增收费或外部发布 |
+| 匿名实际合成验证 | scripts/smoke_production.py | 本地测试图/音、双语明暗字幕及裁切代理；不能代表真人质量 |
+
+Removed / Changed Existing Capabilities：本版未移除既有 API/MCP、导入、预算恢复、校准、字幕、storyboard、独立剪辑或交付能力。没有恢复 v0.5 移除的原生编辑器集成，不改变旧工作区、模型默认值或任务状态。新增工具是高级分支，原命令入口继续兼容。
+
 ## v0.5 有意移除
 
 Removed / Changed Existing Capabilities：移除剪映专用集成、原生草稿导出/重定位命令、第三方序列化模块及相关文档。保留独立剪切、时间映射、字幕、画中画、插片、混音和 MP4 导出。旧用户工程与已交付文件不删除，新素材包不自动附带旧编辑器扩展。

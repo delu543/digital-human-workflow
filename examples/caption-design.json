@@ -1,0 +1,18 @@
+{
+  "purpose": "Fictional technical example; replace times with real acoustic alignment",
+  "composition_id": "captions",
+  "width": 1920,
+  "height": 1080,
+  "duration": 8,
+  "fps": 25,
+  "fonts": {
+    "primary": "assets/NotoSansCJKsc-Regular.otf",
+    "secondary": "assets/NotoSansCJKsc-Regular.otf"
+  },
+  "cues": [
+    {"id": "c1", "start": 0.4, "end": 2.0, "primary": "让表达更清楚", "secondary": "Make your message clear.", "theme": "dark"},
+    {"id": "c2", "start": 2.3, "end": 3.8, "primary": "每句话，都有对应的字幕", "secondary": "Every spoken phrase has a caption.", "theme": "dark"},
+    {"id": "c3", "start": 4.3, "end": 5.9, "primary": "围绕声音，组织画面", "secondary": "Build the picture around the voice.", "theme": "light"},
+    {"id": "c4", "start": 6.2, "end": 7.7, "primary": "同一个时间轴，完整交付", "secondary": "One timeline. A complete film.", "theme": "light"}
+  ]
+}

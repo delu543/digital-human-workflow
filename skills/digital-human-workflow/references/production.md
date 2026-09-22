@@ -4,6 +4,8 @@
 
 先按 [导演手册](director-runbook.md) 完成需求覆盖与出镜策略；长片/圆框的付费覆盖见 [presenter-coverage.md](presenter-coverage.md)，实拍检索见 [stock-search.md](stock-search.md)。
 
+广告或双语包装采用 [广告导演](advertising.md) 和 [字幕同步](captions-sync.md) 的进阶分支。可在原有复杂HTML路径中接入 `production_tools.py` 的字幕层、源时间审计与取景规划；它们不是新增供应商，也不替代run/quality/review。图像由 [素材与生图](media-art-direction.md) 按需求选择，音乐由 [声音设计](sound-design.md) 处理。
+
 v0.4 新片默认采用独立后期：brief 加 `postproduction.mode=independent`，以干净数字人素材完成下面第 1–3 步，随后按 [editing.md](editing.md) 执行独立剪辑、渲染与验收。第 4–8 步保留为原有 storyboard/复杂 Hyperframes 路径；无需为了选择后期工具重生成声像。全流程维持数字人出镜，不自动切换到真人实拍。
 
 1. 保存用户文案到工作区 `inputs/script.txt`，视觉要求写 `brief.json`。忠实保留原稿，预估五分钟只能作为计划；不要静默扩写或剪短。用户明确要求的模型经核实后写入 `brief.model_requirements`（见 realism.md），并使配置一致；这部分任务创建后不可移除或改低。`DH prepare --script <路径> --brief <路径>` 返回任务 ID。保存这个 ID，后续只恢复它。

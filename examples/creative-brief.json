@@ -1,0 +1,16 @@
+{
+  "schema": "creative-brief/v1",
+  "purpose": "Codex-authored optional planning document; not a provider request or automatic permission",
+  "objective": "Explain a fictional service with natural presentation and evidence-led footage",
+  "format": {"aspect_ratio": "16:9", "width": 1920, "height": 1080, "fps": 25, "native_framing_required": true},
+  "voice": {"spoken_language": "user_choice", "source": "approved_authorized_voice", "delivery": "natural_conversational", "model": null},
+  "captions": {"enabled": true, "primary_language": "user_choice", "secondary_language": null, "all_speech_covered": true, "keyword_emphasis": "selective", "font_files": []},
+  "presenter": {"identity_invariants": [], "model": null, "coverage": "selective", "pip_shape": "circle", "head_based_framing": true},
+  "visuals": {"direction": "photographic_editorial", "stock_video": "preferred", "generated_video": "only_if_requested_or_needed_and_authorized", "gpt_image_generation": "optional", "gpt_image_editing": "optional", "text_generated_separately": true, "logos_or_stickers": "only_with_semantic_role_and_rights"},
+  "motion": {"strength": "restrained", "preferred": ["cut", "soft_dissolve", "gentle_push", "semantic_reveal"], "protect_voice_timing": true},
+  "audio": {"bgm": "optional", "music_direction": "match_story", "ducking": "as_needed", "sfx": "purposeful_only", "target_lufs": null, "true_peak_ceiling_dbtp": null},
+  "opening": {"role": "core_promise_with_evidence"},
+  "ending": {"role": "complete_message_and_readable_action"},
+  "delivery": {"direct_mp4": true, "editable_project": true, "zip": "on_request", "short_variant_limit_seconds": null},
+  "constraints": {"account_route": "user_choice", "paid_budget": null, "candidate_limit": null, "no_generation_authorization_from_this_example": true}
+}
